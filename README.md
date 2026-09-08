@@ -26,6 +26,22 @@ A mobile-first family recipe app designed around:
 - Stew with dumplings (winter)
 - Tuna wholemeal pasta bake
 
+## V1 app
+
+- Mobile-first recipe cards
+- Search and category/season filters
+- Direct shareable recipe links
+- Quick steps at the top of every recipe
+- Full ingredients, method, pack-size notes and variations underneath
+- Installable/offline PWA support
+- GitHub Pages deployment workflow
+
+Expected Pages URL once enabled:
+
+```text
+https://avazel-lab.github.io/family-kitchen/
+```
+
 ## Development
 
 ```bash
@@ -39,4 +55,4 @@ npm run dev
 npm run build
 ```
 
-The app is intended for deployment to GitHub Pages via GitHub Actions.
+Deployment is handled by `.github/workflows/deploy-pages.yml`.
