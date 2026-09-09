@@ -7,6 +7,8 @@ import { chickenBeanBurritos } from './reviewed/chickenBeanBurritos'
 import { greekChickenPotatoes } from './reviewed/greekChickenPotatoes'
 import { beefLentilKeema } from './reviewed/beefLentilKeema'
 import { pestoWholemealPastaBake } from './reviewed/pestoWholemealPastaBake'
+import { beefStewDumplings } from './reviewed/beefStewDumplings'
+import { tunaWholemealPastaBake } from './reviewed/tunaWholemealPastaBake'
 
 export const reviewedRecipes: Record<string, Recipe> = {
   [beefMixedBeanChilli.id]: beefMixedBeanChilli,
@@ -16,5 +18,7 @@ export const reviewedRecipes: Record<string, Recipe> = {
   [chickenBeanBurritos.id]: chickenBeanBurritos,
   [greekChickenPotatoes.id]: greekChickenPotatoes,
   [beefLentilKeema.id]: beefLentilKeema,
-  [pestoWholemealPastaBake.id]: pestoWholemealPastaBake
+  [pestoWholemealPastaBake.id]: pestoWholemealPastaBake,
+  [beefStewDumplings.id]: beefStewDumplings,
+  [tunaWholemealPastaBake.id]: tunaWholemealPastaBake
 }
