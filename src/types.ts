@@ -1,6 +1,7 @@
 export type RecipeVariation = {
   title: string
-  text: string
+  text?: string
+  steps?: string[]
 }
 
 export type Recipe = {
