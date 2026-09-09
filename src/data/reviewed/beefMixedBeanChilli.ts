@@ -7,7 +7,7 @@ export const beefMixedBeanChilli: Recipe = {
   category: 'Beef',
   season: 'all-year',
   tags: ['batch cook', 'freezer', 'beans', 'rice', 'pressure cooker option'],
-  prepMinutes: 15,
+  prepMinutes: 25,
   cookMinutes: 45,
   makes: 'About 6 adult portions',
   householdUse: 'For 2 adults + toddler, serve roughly half the batch with rice and sour cream, then chill or freeze the rest. For 2 adults, use about a third of the batch. Also works well with jacket potatoes or in wraps.',
@@ -59,11 +59,26 @@ export const beefMixedBeanChilli: Recipe = {
   variations: [
     {
       title: 'Pressure cooker',
-      text: 'Use sauté mode to brown the beef well, then soften the onion and peppers. Add the garlic, spices and tomato purée and cook for 1 minute. Stir in the Worcestershire sauce, then deglaze the base thoroughly with the stock/water so nothing is stuck. Pour the chopped tomatoes over the top and do not stir them down into the base. Cook at high pressure for 20 minutes, allow a 10-minute natural release, then release the remaining pressure. Switch back to sauté, stir in the drained beans and frozen sweetcorn, and cook for 5–8 minutes until piping hot and thickened. Add sour cream only when serving.'
+      steps: [
+        'Use sauté mode to brown the beef well, then add the onion and peppers and cook until beginning to soften.',
+        'Add the garlic, cumin, oregano, smoked paprika, coriander, chilli powder and tomato purée; cook for 1 minute.',
+        'Stir in the Worcestershire sauce, then add the stock/water and scrape the base thoroughly so nothing is stuck.',
+        'Pour the chopped tomatoes over the top and do not stir them down into the base.',
+        'Cook at high pressure for 20 minutes.',
+        'Allow a 10-minute natural release, then release the remaining pressure.',
+        'Switch back to sauté, stir in the drained beans and frozen sweetcorn, and cook for 5–8 minutes until piping hot and thickened.',
+        'Taste, adjust seasoning and serve with rice and sour cream.'
+      ]
     },
     {
       title: 'Dried beans',
-      text: 'For a make-ahead version, replace the two tins with about 250 g dried beans. Soak overnight in plenty of cold water, drain, cover with fresh water and cook until completely tender according to the packet. Drain, then add them at the same point as the tinned beans. Do not rely on the chilli cooking time to cook dried beans from raw.'
+      steps: [
+        'Replace the two tins of beans with about 250 g dried mixed beans or a suitable dried bean mix.',
+        'Soak overnight in plenty of cold water, unless the packet specifically says soaking is unnecessary.',
+        'Drain, cover with fresh water and cook until completely tender according to the packet instructions.',
+        'Drain the cooked beans, then add them to the chilli at the same point as the tinned beans.',
+        'Do not rely on the chilli cooking time to cook dried beans from raw.'
+      ]
     }
   ],
   familyNotes: [
