@@ -1,0 +1,79 @@
+import type { Recipe } from '../../types'
+
+export const chickenBeanBurritos: Recipe = {
+  id: 'chicken-bean-burritos',
+  title: 'Chicken & Bean Burritos',
+  summary: 'Well-spiced chicken, beans, peppers and sweetcorn wrapped with rice and optional yoghurt or cheese.',
+  category: 'Chicken',
+  season: 'all-year',
+  tags: ['burritos', 'beans', 'frozen veg', 'air fryer option'],
+  prepMinutes: 25,
+  cookMinutes: 25,
+  makes: '8 medium burritos',
+  householdUse: 'Make all 8 using the full pack of wraps. For 2 adults + toddler, expect roughly 3–4 burritos at dinner depending on appetite, then chill or freeze the remainder. For 2 adults, roughly 2–3 burritos should be enough, leaving the rest for lunches or the freezer.',
+  freezer: 'Freeze the cooked filling or fully assembled cooled burritos. Reheat thoroughly.',
+  equipment: ['Large frying pan', 'Two-drawer air fryer optional', 'Saucepan or rice cooker'],
+  packNotes: [
+    'Uses one full 600 g chicken pack, one full tin of beans and a full 8-pack of wraps.',
+    'Uses 120 g dry rice for the whole batch; the remaining dry rice stores indefinitely.',
+    'Frozen sweetcorn avoids opening fresh corn or wasting a tin remainder.',
+    'Peppers overlap well with chilli if both are in the same week.'
+  ],
+  ingredients: [
+    '600 g boneless skinless chicken thighs or breasts, sliced',
+    '1 large onion, sliced',
+    '2 peppers, sliced',
+    '4 garlic cloves, finely chopped or crushed',
+    '1 tbsp smoked paprika',
+    '2 tsp ground cumin',
+    '2 tsp ground coriander',
+    '1 tsp dried oregano',
+    '1 tsp mild chilli powder',
+    '1 x 400 g tin black, pinto or mixed beans, drained and rinsed',
+    '150 g frozen sweetcorn',
+    '120 g dry rice',
+    '8 medium wholemeal or standard tortilla wraps',
+    'Natural yoghurt, grated cheese and lime/lemon to serve, optional'
+  ],
+  quickSteps: [
+    'Cook 120 g dry rice according to the packet.',
+    'Brown the chicken with paprika, cumin, coriander, oregano and mild chilli.',
+    'Add onion and peppers; cook until softened, then add garlic.',
+    'Stir through beans and frozen sweetcorn just long enough to heat through.',
+    'Warm the wraps.',
+    'Fill each with a modest amount of rice and chicken mixture plus optional yoghurt/cheese, then roll tightly.'
+  ],
+  method: [
+    'Cook the rice according to the packet while you prepare the filling, then keep it warm.',
+    'Season the chicken with smoked paprika, cumin, coriander, oregano and mild chilli powder. Cook in a large frying pan over medium-high heat until well browned.',
+    'Add the onion and peppers and cook for 6–8 minutes until softened and the chicken is cooked through. Add the garlic for the final 1–2 minutes so it does not burn.',
+    'Add the drained beans and frozen sweetcorn and cook for another 4–5 minutes, just until piping hot.',
+    'Warm the wraps so they fold without splitting.',
+    'Divide the rice and chicken filling between the wraps without overfilling. Add yoghurt, cheese or a squeeze of lime/lemon if wanted, fold in the sides and roll tightly.',
+    'Eat immediately or toast seam-side down in a dry pan or air fryer for a crisper finish.'
+  ],
+  variations: [
+    {
+      title: 'Two-drawer air fryer',
+      steps: [
+        'Season the sliced chicken with the spices and put it in drawer 1 at 190°C for about 12–15 minutes, shaking or turning once.',
+        'Put the sliced onion and peppers in drawer 2 at 190°C for about 10–12 minutes, shaking once.',
+        'Add the garlic to the vegetables for the final 2–3 minutes, or stir garlic purée through after cooking while everything is hot.',
+        'Heat the drained beans and frozen sweetcorn separately in the microwave until piping hot.',
+        'Combine the chicken, vegetables, beans and sweetcorn, then assemble the burritos with cooked rice and any optional toppings.'
+      ]
+    },
+    {
+      title: 'Dried beans',
+      steps: [
+        'Replace the tin with about 125 g dried black or pinto beans.',
+        'Soak overnight in plenty of cold water unless the packet says soaking is unnecessary.',
+        'Drain, cover with fresh water and cook until completely tender according to the packet.',
+        'Drain well, then add at the same point as the tinned beans.'
+      ]
+    }
+  ],
+  familyNotes: [
+    'Keep the shared filling mildly hot; add jalapeños, hot sauce or chilli sauce to adult burritos at the table if wanted.'
+  ]
+}
