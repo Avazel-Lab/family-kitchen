@@ -7,7 +7,7 @@ export const pestoWholemealPastaBake: Recipe = {
   category: 'Pasta',
   season: 'all-year',
   tags: ['wholemeal pasta', 'frozen veg', 'vegetarian', 'oven only', 'one dish'],
-  prepMinutes: 15,
+  prepMinutes: 20,
   cookMinutes: 45,
   makes: 'About 4 adult portions',
   householdUse: 'For 2 adults + toddler, serve most of the bake and keep any remainder for lunch. For 2 adults, expect roughly half to two-thirds of the dish depending on appetite.',
