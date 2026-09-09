@@ -9,6 +9,8 @@ import { beefLentilKeema } from './reviewed/beefLentilKeema'
 import { pestoWholemealPastaBake } from './reviewed/pestoWholemealPastaBake'
 import { beefStewDumplings } from './reviewed/beefStewDumplings'
 import { tunaWholemealPastaBake } from './reviewed/tunaWholemealPastaBake'
+import { sausagesWedgesOrMash } from './reviewed/sausagesWedgesOrMash'
+import { pizzaNight } from './reviewed/pizzaNight'
 
 export const reviewedRecipes: Record<string, Recipe> = {
   [beefMixedBeanChilli.id]: beefMixedBeanChilli,
@@ -20,5 +22,11 @@ export const reviewedRecipes: Record<string, Recipe> = {
   [beefLentilKeema.id]: beefLentilKeema,
   [pestoWholemealPastaBake.id]: pestoWholemealPastaBake,
   [beefStewDumplings.id]: beefStewDumplings,
-  [tunaWholemealPastaBake.id]: tunaWholemealPastaBake
+  [tunaWholemealPastaBake.id]: tunaWholemealPastaBake,
+  [sausagesWedgesOrMash.id]: sausagesWedgesOrMash,
+  [pizzaNight.id]: pizzaNight
 }
+
+export const excludedRecipeIds = new Set<string>([
+  'fish-wedges-peas'
+])
