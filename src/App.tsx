@@ -266,7 +266,12 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
             {recipe.variations.map((variation) => (
               <div className="variation-card" key={variation.title}>
                 <h3>{variation.title}</h3>
-                <p>{variation.text}</p>
+                {variation.text && <p>{variation.text}</p>}
+                {variation.steps && (
+                  <ol>
+                    {variation.steps.map((step) => <li key={step}>{step}</li>)}
+                  </ol>
+                )}
               </div>
             ))}
           </div>
