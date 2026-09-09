@@ -5,6 +5,8 @@ import { lentilSpaghettiBolognese } from './reviewed/lentilSpaghettiBolognese'
 import { salmonPotatoesBroccoli } from './reviewed/salmonPotatoesBroccoli'
 import { chickenBeanBurritos } from './reviewed/chickenBeanBurritos'
 import { greekChickenPotatoes } from './reviewed/greekChickenPotatoes'
+import { beefLentilKeema } from './reviewed/beefLentilKeema'
+import { pestoWholemealPastaBake } from './reviewed/pestoWholemealPastaBake'
 
 export const reviewedRecipes: Record<string, Recipe> = {
   [beefMixedBeanChilli.id]: beefMixedBeanChilli,
@@ -12,5 +14,7 @@ export const reviewedRecipes: Record<string, Recipe> = {
   [lentilSpaghettiBolognese.id]: lentilSpaghettiBolognese,
   [salmonPotatoesBroccoli.id]: salmonPotatoesBroccoli,
   [chickenBeanBurritos.id]: chickenBeanBurritos,
-  [greekChickenPotatoes.id]: greekChickenPotatoes
+  [greekChickenPotatoes.id]: greekChickenPotatoes,
+  [beefLentilKeema.id]: beefLentilKeema,
+  [pestoWholemealPastaBake.id]: pestoWholemealPastaBake
 }
