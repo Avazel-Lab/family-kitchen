@@ -10,7 +10,7 @@
 
 html { background: #f5f0e8; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: #f5f0e8; }
-button, input { font: inherit; }
+button, input, textarea { font: inherit; }
 a { color: inherit; }
 
 .app-shell { min-height: 100vh; }
@@ -51,6 +51,29 @@ main { width: min(100%, 1040px); margin: 0 auto; padding: 0 16px 48px; }
 }
 .hero h1, .recipe-header h1 { margin: 0; font-size: clamp(32px, 9vw, 56px); line-height: 0.98; letter-spacing: -0.045em; }
 .hero p:not(.eyebrow), .recipe-header > p { max-width: 650px; margin: 14px 0 0; color: #66706a; line-height: 1.55; }
+
+.install-panel {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid #d7c5b6;
+  border-radius: 16px;
+  background: #f0e3d8;
+}
+.install-panel strong { display: block; }
+.install-panel p { margin: 4px 0 0; color: #6b5a4f; line-height: 1.45; }
+.install-panel button {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #22302a;
+  color: #fffdf9;
+  font-weight: 750;
+  cursor: pointer;
+}
+.install-help { grid-column: 1 / -1; font-size: 13px; }
 
 .controls { padding: 4px 0 20px; }
 .search-box input {
@@ -146,10 +169,52 @@ main { width: min(100%, 1040px); margin: 0 auto; padding: 0 16px 48px; }
 .variation-grid { display: grid; gap: 10px; }
 .variation-card { padding: 15px; border: 1px solid #d9d1c5; border-radius: 14px; background: #fffdf9; }
 .compact-details p + p { margin-top: 10px; }
+
+.feedback-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #c9d4cc;
+  border-radius: 18px;
+  background: #eef3ef;
+}
+.feedback-panel .feedback-intro { margin-bottom: 14px; }
+.feedback-label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 750; }
+.feedback-panel textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 130px;
+  padding: 12px 13px;
+  border: 1px solid #b9c6bd;
+  border-radius: 12px;
+  color: #22302a;
+  background: #fffdf9;
+  outline: none;
+  line-height: 1.45;
+}
+.feedback-panel textarea:focus { border-color: #657b6d; box-shadow: 0 0 0 3px rgba(101, 123, 109, 0.15); }
+.feedback-status { margin-top: 6px; color: #65716a; font-size: 11px; }
+.feedback-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.feedback-submit, .feedback-link, .feedback-clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+}
+.feedback-submit { background: #22302a; color: #fffdf9; }
+.feedback-submit.disabled { opacity: 0.45; pointer-events: none; }
+.feedback-link { border: 1px solid #aebdb3; background: #fffdf9; }
+.feedback-clear { border: 0; background: transparent; color: #7a5142; cursor: pointer; }
+.feedback-panel .feedback-disclaimer { margin-top: 14px; color: #6d7871; font-size: 12px; line-height: 1.45; }
+
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 @media (min-width: 680px) {
   main { padding-left: 24px; padding-right: 24px; }
+  .install-panel { grid-template-columns: 1fr auto; align-items: center; }
   .recipe-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .recipe-stats { grid-template-columns: repeat(4, 1fr); }
   .ingredient-list { columns: 2; column-gap: 36px; }
