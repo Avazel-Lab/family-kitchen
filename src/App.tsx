@@ -241,7 +241,7 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
       <section className="recipe-section">
         <h2>Ingredients</h2>
         <ul className="ingredient-list">
-          {recipe.ingredients.map((ingredient) => <li key={ingredient}>{ingredient}</li>)}
+          {recipe.ingredients.map((ingredient) => <li key={ingredient}>{displayIngredient(ingredient)}</li>)}
         </ul>
       </section>
 
@@ -358,6 +358,14 @@ function RecipeFeedback({ recipe }: { recipe: Recipe }) {
       </p>
     </section>
   )
+}
+
+function displayIngredient(ingredient: string) {
+  const garlicMatch = ingredient.match(/^(\d+) garlic cloves\b/)
+  if (!garlicMatch) return ingredient
+
+  const cloves = Number(garlicMatch[1])
+  return `${ingredient} (or about ${cloves} tsp garlic purée)`
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
