@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { recipes } from './data/recipes'
+import { recipes as baseRecipes } from './data/recipes'
+import { reviewedRecipes } from './data/reviewedRecipes'
 import type { Recipe } from './types'
+
+const recipes = baseRecipes.map((recipe) => reviewedRecipes[recipe.id] ?? recipe)
 
 function routeFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, '')
