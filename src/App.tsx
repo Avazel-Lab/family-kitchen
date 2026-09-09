@@ -5,6 +5,11 @@ import type { Recipe } from './types'
 
 const recipes = baseRecipes.map((recipe) => reviewedRecipes[recipe.id] ?? recipe)
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
+}
+
 function routeFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, '')
   const [section, id] = hash.split('/')
@@ -33,7 +38,7 @@ function App() {
           </span>
         </a>
       </header>
-      <main>{selected ? <RecipePage recipe={selected} /> : <RecipeList />}</main>
+      <main>{selected ? <RecipePage recipe={selected} key={selected.id} /> : <RecipeList />}</main>
     </div>
   )
 }
@@ -74,6 +79,8 @@ function RecipeList() {
         <p>Quick prompts when you know what you are doing, full instructions when you do not.</p>
       </section>
 
+      <InstallApp />
+
       <section className="controls" aria-label="Recipe search and filters">
         <label className="search-box">
           <span className="sr-only">Search recipes</span>
@@ -105,6 +112,60 @@ function RecipeList() {
         {visibleRecipes.length === 0 && <p className="empty-state">No recipes match that search.</p>}
       </section>
     </>
+  )
+}
+
+function InstallApp() {
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [showHelp, setShowHelp] = useState(false)
+  const [installed, setInstalled] = useState(() => window.matchMedia('(display-mode: standalone)').matches)
+
+  useEffect(() => {
+    const onBeforeInstall = (event: Event) => {
+      const promptEvent = event as BeforeInstallPromptEvent
+      promptEvent.preventDefault()
+      setInstallPrompt(promptEvent)
+    }
+    const onInstalled = () => {
+      setInstalled(true)
+      setInstallPrompt(null)
+      setShowHelp(false)
+    }
+
+    window.addEventListener('beforeinstallprompt', onBeforeInstall)
+    window.addEventListener('appinstalled', onInstalled)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall)
+      window.removeEventListener('appinstalled', onInstalled)
+    }
+  }, [])
+
+  if (installed) return null
+
+  async function install() {
+    if (!installPrompt) {
+      setShowHelp((current) => !current)
+      return
+    }
+
+    await installPrompt.prompt()
+    await installPrompt.userChoice
+    setInstallPrompt(null)
+  }
+
+  return (
+    <section className="install-panel" aria-label="Install Family Kitchen">
+      <div>
+        <strong>Add Family Kitchen to your phone</strong>
+        <p>Install it as a standalone app/shortcut for quicker access.</p>
+      </div>
+      <button type="button" onClick={install}>Install app</button>
+      {showHelp && (
+        <p className="install-help">
+          On Android, open your browser menu and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.
+        </p>
+      )}
+    </section>
   )
 }
 
@@ -219,12 +280,78 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
         </section>
       )}
 
+      <RecipeFeedback recipe={recipe} />
+
       <section className="recipe-section compact-details">
         <h2>Useful details</h2>
         <p><strong>Equipment:</strong> {recipe.equipment.join(', ')}</p>
         <p><strong>Freezer:</strong> {recipe.freezer}</p>
       </section>
     </article>
+  )
+}
+
+function RecipeFeedback({ recipe }: { recipe: Recipe }) {
+  const storageKey = `family-kitchen:recipe-note:${recipe.id}`
+  const [note, setNote] = useState(() => window.localStorage.getItem(storageKey) ?? '')
+
+  useEffect(() => {
+    if (note) {
+      window.localStorage.setItem(storageKey, note)
+    } else {
+      window.localStorage.removeItem(storageKey)
+    }
+  }, [note, storageKey])
+
+  const issueTitle = `Recipe feedback: ${recipe.title}`
+  const issueBody = [
+    `## Recipe`,
+    recipe.title,
+    '',
+    `Recipe page: ${window.location.href}`,
+    '',
+    '## Feedback',
+    note.trim()
+  ].join('\n')
+  const issueUrl = `https://github.com/Avazel-Lab/family-kitchen/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`
+  const viewUrl = `https://github.com/Avazel-Lab/family-kitchen/issues?q=${encodeURIComponent(`is:issue "${issueTitle}"`)}`
+
+  function clearNote() {
+    if (window.confirm('Clear the local draft note for this recipe?')) setNote('')
+  }
+
+  return (
+    <section className="recipe-section feedback-panel">
+      <h2>Notes & feedback</h2>
+      <p className="feedback-intro">
+        Jot down changes while cooking. Drafts autosave only on this phone/browser.
+      </p>
+      <label htmlFor={`feedback-${recipe.id}`} className="feedback-label">Draft note</label>
+      <textarea
+        id={`feedback-${recipe.id}`}
+        value={note}
+        onChange={(event) => setNote(event.target.value)}
+        placeholder="e.g. Needed 5 minutes longer reducing; use less sweetcorn next time…"
+        rows={6}
+      />
+      <div className="feedback-status">{note ? 'Saved locally' : 'Nothing saved yet'}</div>
+      <div className="feedback-actions">
+        <a
+          className={note.trim() ? 'feedback-submit' : 'feedback-submit disabled'}
+          href={note.trim() ? issueUrl : undefined}
+          target="_blank"
+          rel="noreferrer"
+          aria-disabled={!note.trim()}
+        >
+          Submit feedback
+        </a>
+        <a className="feedback-link" href={viewUrl} target="_blank" rel="noreferrer">View feedback</a>
+        {note && <button className="feedback-clear" type="button" onClick={clearNote}>Clear draft</button>}
+      </div>
+      <p className="feedback-disclaimer">
+        Submitting opens a pre-filled issue in GitHub for review. A GitHub account is required to submit it; the local draft remains on this device until you clear it.
+      </p>
+    </section>
   )
 }
 
