@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { recipes as baseRecipes } from './data/recipes'
-import { reviewedRecipes } from './data/reviewedRecipes'
+import { excludedRecipeIds, reviewedRecipes } from './data/reviewedRecipes'
 import type { Recipe } from './types'
 
-const recipes = baseRecipes.map((recipe) => reviewedRecipes[recipe.id] ?? recipe)
+const recipes = baseRecipes
+  .filter((recipe) => !excludedRecipeIds.has(recipe.id))
+  .map((recipe) => reviewedRecipes[recipe.id] ?? recipe)
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
