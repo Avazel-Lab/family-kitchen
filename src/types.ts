@@ -48,3 +48,8 @@ export type Recipe = {
   variations: RecipeVariation[]
   familyNotes?: string[]
 }
+
+export type MealPlanItem = {
+  recipeId: string
+  portions: number
+}
