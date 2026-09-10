@@ -11,6 +11,7 @@ export type ShoppingCategory =
   | 'Other'
 
 export type PlannedRecipeOptions = Record<string, string | undefined>
+export type PlannedIngredientChoices = Record<string, Record<string, string | undefined> | undefined>
 
 export type ShoppingListItem = {
   id: string
@@ -36,7 +37,8 @@ export const shoppingCategoryOrder: ShoppingCategory[] = [
 export function buildShoppingList(
   plan: MealPlanItem[],
   recipes: Recipe[],
-  selectedOptions: PlannedRecipeOptions = {}
+  selectedOptions: PlannedRecipeOptions = {},
+  ingredientChoices: PlannedIngredientChoices = {}
 ): ShoppingListItem[] {
   const combined = new Map<string, Omit<ShoppingListItem, 'category' | 'stateKey'>>()
 
@@ -51,7 +53,7 @@ export function buildShoppingList(
     const activeIngredients = [
       ...recipe.ingredients.filter((ingredient) => !replacedIngredientIds.has(ingredient.id)),
       ...(selectedVariation?.ingredients ?? [])
-    ]
+    ].map((ingredient) => selectedIngredientForShopping(recipe.id, ingredient, ingredientChoices))
 
     for (const ingredient of activeIngredients) {
       if (!shouldIncludeInShoppingList(ingredient)) continue
@@ -132,6 +134,20 @@ export function formatShoppingLine(item: ShoppingListItem) {
   return `${shoppingDisplayName(item)} — ${formatShoppingAmount(item)}`
 }
 
+function selectedIngredientForShopping(
+  recipeId: string,
+  ingredient: RecipeIngredient,
+  ingredientChoices: PlannedIngredientChoices
+): RecipeIngredient {
+  if (!ingredient.shoppingChoice) return ingredient
+
+  const selectedAlternativeId = ingredientChoices[recipeId]?.[ingredient.id]
+  if (!selectedAlternativeId) return ingredient
+
+  const alternative = ingredient.alternatives?.find((candidate) => candidate.id === selectedAlternativeId)
+  return alternative ?? ingredient
+}
+
 function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
   if (ingredient.quantity === undefined) return true
 
@@ -151,7 +167,7 @@ function shoppingCategoryFor(item: Omit<ShoppingListItem, 'category' | 'stateKey
   const text = `${id} ${name}`
 
   if (id.startsWith('frozen-') || name.startsWith('frozen ')) return 'Frozen'
-  if (item.purchaseUnit) return 'Tins & jars'
+  if (item.purchaseUnit && /^(tin|jar)$/i.test(item.purchaseUnit.label)) return 'Tins & jars'
 
   if (/(beef|chicken|sausage|salmon|white-fish|fish-fillet|fish portion|stewing-beef)/.test(text)) return 'Meat & fish'
   if (/(onion|pepper|carrot|potato|garlic|lemon|lime|mushroom)/.test(text)) return 'Produce'
