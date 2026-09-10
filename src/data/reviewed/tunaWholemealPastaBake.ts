@@ -48,7 +48,9 @@ export const tunaWholemealPastaBake: Recipe = {
   ],
   variations: [
     {
+      id: 'bechamel',
       title: 'Béchamel version',
+      planningOption: true,
       ingredients: [
         { id: 'butter', name: 'butter', quantity: 25, unit: 'g' },
         { id: 'plain-flour', name: 'plain flour', quantity: 25, unit: 'g' },
