@@ -64,7 +64,11 @@ export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): Shop
     }
   }
 
-  return Array.from(combined.values())
+  const rawItems = Array.from(combined.values())
+  const quantifiedIds = new Set(rawItems.filter((item) => item.quantity !== undefined).map((item) => item.id))
+
+  return rawItems
+    .filter((item) => item.quantity !== undefined || !quantifiedIds.has(item.id))
     .map((item) => {
       const category = shoppingCategoryFor(item)
       return {
@@ -124,8 +128,9 @@ function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
   const id = ingredient.id.toLowerCase()
   const name = ingredient.name.toLowerCase()
 
-  // Plain water and water/stock choices do not require a purchase because water is a valid recipe option.
+  // Plain water and water/stock choices never need buying.
   if (id === 'water' || name === 'water') return false
+  if (id.endsWith('-water') && name.includes('water')) return false
   if ((id.includes('stock-or-water') || id.includes('water-or-stock')) && name.includes('water')) return false
 
   return true
