@@ -32,7 +32,16 @@ export const chickenBeanBurritos: Recipe = {
     { id: 'mild-chilli-powder', name: 'mild chilli powder', quantity: 1, unit: 'tsp' },
     { id: 'burrito-beans', name: 'black, pinto or mixed beans', quantity: 400, unit: 'g', note: 'drained and rinsed', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
     { id: 'frozen-sweetcorn', name: 'frozen sweetcorn', quantity: 150, unit: 'g' },
-    { id: 'rice', name: 'dry rice', quantity: 120, unit: 'g' },
+    {
+      id: 'rice',
+      name: 'dry rice',
+      quantity: 120,
+      unit: 'g',
+      shoppingChoice: true,
+      alternatives: [
+        { id: 'microwave-rice', name: 'microwave rice', quantity: 250, unit: 'g', purchaseUnit: { label: 'pouch', quantity: 250, unit: 'g' } }
+      ]
+    },
     { id: 'tortilla-wrap', name: 'medium tortilla wrap', pluralName: 'medium tortilla wraps', quantity: 8, unit: 'count', note: 'wholemeal or standard' },
     { id: 'burrito-toppings', name: 'Natural yoghurt, grated cheese and lime/lemon to serve, optional' }
   ],
