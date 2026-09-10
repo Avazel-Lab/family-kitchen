@@ -18,6 +18,7 @@ export type IngredientAlternative = {
 
 export type RecipeIngredient = IngredientAlternative & {
   alternatives?: IngredientAlternative[]
+  shoppingChoice?: boolean
 }
 
 export type RecipeVariation = {
