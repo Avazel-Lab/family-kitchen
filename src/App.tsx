@@ -1,21 +1,43 @@
 import { useEffect, useMemo, useState } from 'react'
 import { recipes } from './data/recipes'
+import { loadMealPlan, normalisePlanPortions, recipePlanHref, saveMealPlan } from './mealPlan'
 import { formatIngredient, formatPortionCount, ingredientSearchTerms } from './recipeScaling'
-import type { Recipe } from './types'
+import type { MealPlanItem, Recipe } from './types'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
 }
 
-function routeFromHash() {
+type Route = {
+  section: 'home' | 'recipe' | 'plan'
+  id?: string
+  portions?: number
+}
+
+function routeFromHash(): Route {
   const hash = window.location.hash.replace(/^#\/?/, '')
-  const [section, id] = hash.split('/')
-  return section === 'recipe' && id ? { section: 'recipe', id } : { section: 'home', id: '' }
+  const [path, query = ''] = hash.split('?')
+
+  if (path === 'plan') return { section: 'plan' }
+
+  const [section, rawId] = path.split('/')
+  if (section === 'recipe' && rawId) {
+    const portionParam = new URLSearchParams(query).get('portions')
+    const parsedPortions = portionParam === null ? undefined : Number(portionParam)
+    return {
+      section: 'recipe',
+      id: decodeURIComponent(rawId),
+      portions: parsedPortions && parsedPortions > 0 ? normalisePlanPortions(parsedPortions) : undefined
+    }
+  }
+
+  return { section: 'home' }
 }
 
 function App() {
   const [route, setRoute] = useState(routeFromHash)
+  const [mealPlan, setMealPlan] = useState<MealPlanItem[]>(loadMealPlan)
 
   useEffect(() => {
     const onHashChange = () => setRoute(routeFromHash())
@@ -23,20 +45,84 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  const selected = route.section === 'recipe' ? recipes.find((recipe) => recipe.id === route.id) : undefined
+  useEffect(() => {
+    saveMealPlan(mealPlan)
+  }, [mealPlan])
+
+  const selected = route.section === 'recipe' && route.id
+    ? recipes.find((recipe) => recipe.id === route.id)
+    : undefined
+  const selectedPlanItem = selected
+    ? mealPlan.find((item) => item.recipeId === selected.id)
+    : undefined
+
+  function saveRecipeToPlan(recipeId: string, portions: number) {
+    const normalisedPortions = normalisePlanPortions(portions)
+    setMealPlan((current) => {
+      const exists = current.some((item) => item.recipeId === recipeId)
+      if (!exists) return [...current, { recipeId, portions: normalisedPortions }]
+      return current.map((item) =>
+        item.recipeId === recipeId ? { ...item, portions: normalisedPortions } : item
+      )
+    })
+  }
+
+  function updatePlanPortions(recipeId: string, portions: number) {
+    const normalisedPortions = normalisePlanPortions(portions)
+    setMealPlan((current) => current.map((item) =>
+      item.recipeId === recipeId ? { ...item, portions: normalisedPortions } : item
+    ))
+  }
+
+  function removeFromPlan(recipeId: string) {
+    setMealPlan((current) => current.filter((item) => item.recipeId !== recipeId))
+  }
+
+  let page
+  if (route.section === 'plan') {
+    page = (
+      <PlanPage
+        plan={mealPlan}
+        onChangePortions={updatePlanPortions}
+        onRemove={removeFromPlan}
+        onClear={() => setMealPlan([])}
+      />
+    )
+  } else if (selected) {
+    const keyPortions = route.portions === undefined ? 'default' : route.portions
+    page = (
+      <RecipePage
+        recipe={selected}
+        key={`${selected.id}-${keyPortions}`}
+        initialPortions={route.portions}
+        plannedPortions={selectedPlanItem?.portions}
+        onSaveToPlan={saveRecipeToPlan}
+      />
+    )
+  } else {
+    page = <RecipeList />
+  }
 
   return (
     <div className="app-shell">
       <header className="site-header">
-        <a className="brand" href="#/" aria-label="Family Kitchen home">
-          <span className="brand-mark">FK</span>
-          <span>
-            <strong>Family Kitchen</strong>
-            <small>Simple food. Less waste.</small>
-          </span>
-        </a>
+        <div className="site-header-inner">
+          <a className="brand" href="#/" aria-label="Family Kitchen home">
+            <span className="brand-mark">FK</span>
+            <span>
+              <strong>Family Kitchen</strong>
+              <small>Simple food. Less waste.</small>
+            </span>
+          </a>
+          <nav className="site-nav" aria-label="Main navigation">
+            <a className={route.section === 'plan' ? 'plan-link active' : 'plan-link'} href="#/plan">
+              Plan
+              {mealPlan.length > 0 && <span className="plan-count">{mealPlan.length}</span>}
+            </a>
+          </nav>
+        </div>
       </header>
-      <main>{selected ? <RecipePage recipe={selected} key={selected.id} /> : <RecipeList />}</main>
+      <main>{page}</main>
     </div>
   )
 }
@@ -118,6 +204,82 @@ function RecipeList() {
   )
 }
 
+function PlanPage({
+  plan,
+  onChangePortions,
+  onRemove,
+  onClear
+}: {
+  plan: MealPlanItem[]
+  onChangePortions: (recipeId: string, portions: number) => void
+  onRemove: (recipeId: string) => void
+  onClear: () => void
+}) {
+  const plannedRecipes = plan.flatMap((item) => {
+    const recipe = recipes.find((candidate) => candidate.id === item.recipeId)
+    return recipe ? [{ item, recipe }] : []
+  })
+
+  function clearPlan() {
+    if (window.confirm('Clear all recipes from the cooking plan?')) onClear()
+  }
+
+  return (
+    <div className="plan-page">
+      <section className="plan-hero">
+        <p className="eyebrow">Meal planning</p>
+        <h1>Cooking plan</h1>
+        <p>Save the recipes and portion sizes you intend to cook. This plan will become the source for the consolidated shopping list.</p>
+      </section>
+
+      {plannedRecipes.length === 0 ? (
+        <section className="plan-empty">
+          <h2>No meals planned yet</h2>
+          <p>Choose a recipe, set the portions you want, then add it to the plan.</p>
+          <a href="#/">Browse recipes</a>
+        </section>
+      ) : (
+        <>
+          <div className="plan-toolbar">
+            <strong>{plannedRecipes.length} {plannedRecipes.length === 1 ? 'recipe' : 'recipes'} planned</strong>
+            <div>
+              <a href="#/">Add recipes</a>
+              <button type="button" onClick={clearPlan}>Clear plan</button>
+            </div>
+          </div>
+
+          <section className="plan-list" aria-label="Planned recipes">
+            {plannedRecipes.map(({ item, recipe }) => (
+              <article className="plan-item" key={recipe.id}>
+                <div className="plan-item-main">
+                  <div className="card-topline">
+                    <span className="category-pill">{recipe.category}</span>
+                    {recipe.season && recipe.season !== 'all-year' && <span className="season-pill">{recipe.season}</span>}
+                  </div>
+                  <a className="plan-item-title" href={recipePlanHref(recipe.id, item.portions)}>
+                    <h2>{recipe.title}</h2>
+                  </a>
+                  <p>{formatPortionCount(item.portions)} portions</p>
+                </div>
+
+                <PlanPortionControls
+                  portions={item.portions}
+                  onChange={(portions) => onChangePortions(recipe.id, portions)}
+                />
+
+                <div className="plan-item-actions">
+                  <a href={recipePlanHref(recipe.id, item.portions)}>Open recipe</a>
+                  <button type="button" onClick={() => onRemove(recipe.id)}>Remove</button>
+                </div>
+              </article>
+            ))}
+          </section>
+        </>
+      )}
+    </div>
+  )
+}
+
 function InstallApp() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showHelp, setShowHelp] = useState(false)
@@ -189,10 +351,21 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   )
 }
 
-function RecipePage({ recipe }: { recipe: Recipe }) {
+function RecipePage({
+  recipe,
+  initialPortions,
+  plannedPortions,
+  onSaveToPlan
+}: {
+  recipe: Recipe
+  initialPortions?: number
+  plannedPortions?: number
+  onSaveToPlan: (recipeId: string, portions: number) => void
+}) {
   const [shareText, setShareText] = useState('Share')
-  const [portions, setPortions] = useState(recipe.basePortions)
+  const [portions, setPortions] = useState(() => normalisePlanPortions(initialPortions ?? recipe.basePortions))
   const atDefaultPortions = Math.abs(portions - recipe.basePortions) < 0.001
+  const matchesPlan = plannedPortions !== undefined && Math.abs(portions - plannedPortions) < 0.001
 
   async function shareRecipe() {
     const url = window.location.href
@@ -232,6 +405,28 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
       </header>
 
       <PortionSelector recipe={recipe} portions={portions} onChange={setPortions} />
+
+      <section className="plan-action-panel" aria-label="Cooking plan">
+        <div>
+          <p className="eyebrow">Cooking plan</p>
+          <strong>
+            {plannedPortions === undefined
+              ? `Save ${formatPortionCount(portions)} portions`
+              : `${formatPortionCount(plannedPortions)} portions currently saved`}
+          </strong>
+          <p>Save this recipe and portion count for the upcoming shopping-list workflow.</p>
+        </div>
+        <div className="plan-action-buttons">
+          <button
+            type="button"
+            disabled={matchesPlan}
+            onClick={() => onSaveToPlan(recipe.id, portions)}
+          >
+            {matchesPlan ? 'Saved in plan' : plannedPortions === undefined ? 'Add to plan' : 'Update plan'}
+          </button>
+          <a href="#/plan">View plan</a>
+        </div>
+      </section>
 
       <section className="quick-panel">
         <p className="eyebrow">Quick steps</p>
@@ -330,9 +525,7 @@ function PortionSelector({
   const atDefault = Math.abs(portions - recipe.basePortions) < 0.001
 
   function setAmount(value: number) {
-    if (!Number.isFinite(value)) return
-    const snapped = Math.max(step, Math.round(value / step) * step)
-    onChange(snapped)
+    onChange(normalisePlanPortions(value))
   }
 
   return (
@@ -367,6 +560,42 @@ function PortionSelector({
         </div>
       )}
     </section>
+  )
+}
+
+function PlanPortionControls({
+  portions,
+  onChange
+}: {
+  portions: number
+  onChange: (portions: number) => void
+}) {
+  const step = 0.5
+
+  function setAmount(value: number) {
+    onChange(normalisePlanPortions(value))
+  }
+
+  return (
+    <div className="plan-portion-editor">
+      <span>Portions</span>
+      <div className="portion-controls compact">
+        <button type="button" aria-label="Decrease planned portions" onClick={() => setAmount(portions - step)}>−</button>
+        <input
+          type="number"
+          min={step}
+          step={step}
+          value={portions}
+          aria-label="Planned portions"
+          onChange={(event) => {
+            const value = Number(event.target.value)
+            if (value > 0) onChange(value)
+          }}
+          onBlur={() => setAmount(portions)}
+        />
+        <button type="button" aria-label="Increase planned portions" onClick={() => setAmount(portions + step)}>+</button>
+      </div>
+    </div>
   )
 }
 
