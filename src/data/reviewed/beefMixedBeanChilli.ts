@@ -10,6 +10,7 @@ export const beefMixedBeanChilli: Recipe = {
   prepMinutes: 25,
   cookMinutes: 45,
   makes: 'About 6 adult portions',
+  basePortions: 6,
   householdUse: 'For 2 adults + toddler, serve roughly half the batch with rice and sour cream, then chill or freeze the rest. For 2 adults, use about a third of the batch. Also works well with jacket potatoes or in wraps.',
   freezer: 'Excellent. Freeze the chilli without rice or sour cream for up to 3 months.',
   equipment: ['Large saucepan or casserole', 'Pressure cooker optional'],
@@ -20,24 +21,24 @@ export const beefMixedBeanChilli: Recipe = {
     'A 150 ml pot of sour cream is enough for normal dollops across the batch; use a 300 ml pot if you want it generously or across two meals.'
   ],
   ingredients: [
-    '500 g beef mince, 5% or 12% fat',
-    '1 large onion, diced',
-    '2 peppers, diced',
-    '4 garlic cloves, finely chopped',
-    '1 tbsp ground cumin',
-    '1 tbsp dried oregano',
-    '2 tsp smoked paprika',
-    '1 tsp ground coriander',
-    '2 tsp mild chilli powder',
-    '2 tbsp tomato purée',
-    '1 tbsp Worcestershire sauce',
-    '2 x 400 g tins chopped tomatoes',
-    '2 x 400 g tins mixed beans, drained and rinsed',
-    '150 g frozen sweetcorn',
-    '150 ml beef stock or water',
-    '1 x 150 ml pot sour cream, to serve',
-    '1 tbsp olive or rapeseed oil if needed',
-    'Rice, jacket potatoes or wraps, to serve'
+    { id: 'beef-mince', name: 'beef mince', quantity: 500, unit: 'g', note: '5% or 12% fat' },
+    { id: 'onion', name: 'large onion', pluralName: 'large onions', quantity: 1, unit: 'count', note: 'diced' },
+    { id: 'pepper', name: 'pepper', pluralName: 'peppers', quantity: 2, unit: 'count', note: 'diced' },
+    { id: 'garlic', name: 'garlic clove', pluralName: 'garlic cloves', quantity: 4, unit: 'count', note: 'finely chopped', alternatives: [{ id: 'garlic-puree', name: 'garlic purée', quantity: 4, unit: 'tsp' }] },
+    { id: 'ground-cumin', name: 'ground cumin', quantity: 1, unit: 'tbsp' },
+    { id: 'dried-oregano', name: 'dried oregano', quantity: 1, unit: 'tbsp' },
+    { id: 'smoked-paprika', name: 'smoked paprika', quantity: 2, unit: 'tsp' },
+    { id: 'ground-coriander', name: 'ground coriander', quantity: 1, unit: 'tsp' },
+    { id: 'mild-chilli-powder', name: 'mild chilli powder', quantity: 2, unit: 'tsp' },
+    { id: 'tomato-puree', name: 'tomato purée', quantity: 2, unit: 'tbsp' },
+    { id: 'worcestershire-sauce', name: 'Worcestershire sauce', quantity: 1, unit: 'tbsp' },
+    { id: 'chopped-tomatoes', name: 'chopped tomatoes', quantity: 800, unit: 'g', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'mixed-beans', name: 'mixed beans', quantity: 800, unit: 'g', note: 'drained and rinsed', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'frozen-sweetcorn', name: 'frozen sweetcorn', quantity: 150, unit: 'g' },
+    { id: 'beef-stock-or-water', name: 'beef stock or water', quantity: 150, unit: 'ml' },
+    { id: 'sour-cream', name: 'sour cream', quantity: 150, unit: 'ml', note: 'to serve' },
+    { id: 'cooking-oil', name: 'olive or rapeseed oil', quantity: 1, unit: 'tbsp', note: 'if needed' },
+    { id: 'chilli-serving-carb', name: 'Rice, jacket potatoes or wraps, to serve' }
   ],
   quickSteps: [
     'Brown the beef well; add onion and peppers and soften.',
@@ -72,9 +73,11 @@ export const beefMixedBeanChilli: Recipe = {
     },
     {
       title: 'Dried beans',
+      ingredients: [
+        { id: 'dried-mixed-beans', name: 'dried mixed beans', quantity: 250, unit: 'g', note: 'use instead of the tinned mixed beans' }
+      ],
       steps: [
-        'Replace the two tins of beans with about 250 g dried mixed beans or a suitable dried bean mix.',
-        'Soak overnight in plenty of cold water, unless the packet specifically says soaking is unnecessary.',
+        'Soak the dried beans overnight in plenty of cold water, unless the packet specifically says soaking is unnecessary.',
         'Drain, cover with fresh water and cook until completely tender according to the packet instructions.',
         'Drain the cooked beans, then add them to the chilli at the same point as the tinned beans.',
         'Do not rely on the chilli cooking time to cook dried beans from raw.'

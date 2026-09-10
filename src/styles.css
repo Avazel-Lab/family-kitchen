@@ -146,6 +146,35 @@ main { width: min(100%, 1040px); margin: 0 auto; padding: 0 16px 48px; }
 .stat span { display: block; margin-bottom: 3px; color: #727a75; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.06em; }
 .stat strong { display: block; font-size: 14px; }
 
+.portion-panel {
+  display: grid;
+  gap: 14px;
+  margin: 4px 0 18px;
+  padding: 18px;
+  border: 1px solid #c9d4cc;
+  border-radius: 18px;
+  background: #eef3ef;
+}
+.portion-copy .eyebrow { margin-bottom: 4px; color: #657b6d; }
+.portion-copy > strong { display: block; font-size: 18px; }
+.portion-copy > p:last-child { margin: 6px 0 0; color: #647068; font-size: 13px; line-height: 1.45; }
+.portion-controls { display: grid; grid-template-columns: 44px 72px 44px; gap: 7px; align-items: center; }
+.portion-controls button,
+.portion-controls input {
+  height: 44px;
+  border: 1px solid #aebdb3;
+  border-radius: 12px;
+  background: #fffdf9;
+  color: #22302a;
+  text-align: center;
+  font-weight: 800;
+}
+.portion-controls button { cursor: pointer; font-size: 20px; }
+.portion-controls input { width: 72px; outline: none; }
+.portion-controls input:focus { border-color: #657b6d; box-shadow: 0 0 0 3px rgba(101, 123, 109, 0.15); }
+.portion-scaled-note { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; color: #56645c; font-size: 12px; }
+.portion-scaled-note button { border: 0; padding: 0; background: transparent; color: #7a5142; font-weight: 750; cursor: pointer; text-decoration: underline; }
+
 .quick-panel {
   margin: 4px 0 22px;
   padding: 20px;
@@ -164,10 +193,14 @@ main { width: min(100%, 1040px); margin: 0 auto; padding: 0 16px 48px; }
 .recipe-section li { padding: 5px 0; line-height: 1.5; }
 .household-note { margin-top: 2px; padding: 18px; border: 1px solid #d7c5b6; border-radius: 16px; background: #f0e3d8; }
 .household-note h2 { font-size: 17px; }
+.household-note .default-context-note { margin-top: 8px; color: #7c695b; font-size: 12px; }
 .ingredient-list { columns: 1; }
 .method-list li { padding-bottom: 10px; }
+.pack-note-intro { margin: -6px 0 10px !important; color: #727a75 !important; font-size: 12px; }
 .variation-grid { display: grid; gap: 10px; }
 .variation-card { padding: 15px; border: 1px solid #d9d1c5; border-radius: 14px; background: #fffdf9; }
+.variation-ingredients { margin: 10px 0 12px; padding: 12px; border-radius: 10px; background: #f3efe8; }
+.variation-ingredients > strong { display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 .compact-details p + p { margin-top: 10px; }
 
 .feedback-panel {
@@ -217,6 +250,8 @@ main { width: min(100%, 1040px); margin: 0 auto; padding: 0 16px 48px; }
   .install-panel { grid-template-columns: 1fr auto; align-items: center; }
   .recipe-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .recipe-stats { grid-template-columns: repeat(4, 1fr); }
+  .portion-panel { grid-template-columns: 1fr auto; align-items: center; }
+  .portion-scaled-note { grid-column: 1 / -1; }
   .ingredient-list { columns: 2; column-gap: 36px; }
   .variation-grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -1,7 +1,30 @@
+export type PurchaseUnit = {
+  label: string
+  quantity: number
+  unit: string
+}
+
+export type IngredientAlternative = {
+  id: string
+  name: string
+  pluralName?: string
+  quantity?: number
+  unit?: string
+  note?: string
+  quantityForPortions?: number
+  scalable?: boolean
+  purchaseUnit?: PurchaseUnit
+}
+
+export type RecipeIngredient = IngredientAlternative & {
+  alternatives?: IngredientAlternative[]
+}
+
 export type RecipeVariation = {
   title: string
   text?: string
   steps?: string[]
+  ingredients?: RecipeIngredient[]
 }
 
 export type Recipe = {
@@ -14,11 +37,12 @@ export type Recipe = {
   prepMinutes: number
   cookMinutes: number
   makes: string
+  basePortions: number
   householdUse: string
   freezer: string
   equipment: string[]
   packNotes: string[]
-  ingredients: string[]
+  ingredients: RecipeIngredient[]
   quickSteps: string[]
   method: string[]
   variations: RecipeVariation[]

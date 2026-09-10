@@ -10,6 +10,7 @@ export const tunaWholemealPastaBake: Recipe = {
   prepMinutes: 15,
   cookMinutes: 45,
   makes: 'About 4 adult portions',
+  basePortions: 4,
   householdUse: 'For 2 adults + toddler, serve most of the dish and keep any remainder for lunch. For 2 adults, expect roughly half to two-thirds of the bake depending on appetite.',
   freezer: 'Good. Cool fully, portion and freeze. Reheat thoroughly.',
   equipment: ['Large ovenproof baking dish with lid or foil'],
@@ -19,14 +20,14 @@ export const tunaWholemealPastaBake: Recipe = {
     'Frozen sweetcorn and peas cook in the same dish with no separate vegetable pan.'
   ],
   ingredients: [
-    '200 g dry wholemeal pasta shapes',
-    '2 x 145 g tins tuna, drained',
-    '1 x 400 g tin chopped tomatoes',
-    '300 ml boiling water or low-salt vegetable stock, plus a little extra if needed',
-    '150 g frozen sweetcorn',
-    '100 g frozen peas',
-    '100 g grated cheddar',
-    'Herbs, spices and black pepper as desired'
+    { id: 'wholemeal-pasta', name: 'dry wholemeal pasta shapes', quantity: 200, unit: 'g' },
+    { id: 'tinned-tuna', name: 'tuna', quantity: 290, unit: 'g', note: 'drain before using', purchaseUnit: { label: 'tin', quantity: 145, unit: 'g' } },
+    { id: 'chopped-tomatoes', name: 'chopped tomatoes', quantity: 400, unit: 'g', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'vegetable-stock-or-water', name: 'boiling water or low-salt vegetable stock', quantity: 300, unit: 'ml', note: 'plus a little extra if needed' },
+    { id: 'frozen-sweetcorn', name: 'frozen sweetcorn', quantity: 150, unit: 'g' },
+    { id: 'frozen-peas', name: 'frozen peas', quantity: 100, unit: 'g' },
+    { id: 'cheddar', name: 'grated cheddar', quantity: 100, unit: 'g' },
+    { id: 'tuna-bake-seasoning', name: 'Herbs, spices and black pepper as desired' }
   ],
   quickSteps: [
     'Heat oven to 200°C fan.',
@@ -38,9 +39,9 @@ export const tunaWholemealPastaBake: Recipe = {
   ],
   method: [
     'Heat the oven to 200°C fan.',
-    'Put the dry wholemeal pasta, chopped tomatoes, 300 ml boiling water or stock and frozen sweetcorn into a large ovenproof baking dish. Stir well so the pasta is mostly submerged, then cover tightly with a lid or foil.',
+    'Put the dry wholemeal pasta, chopped tomatoes, measured boiling water or stock and frozen sweetcorn into a large ovenproof baking dish. Stir well so the pasta is mostly submerged, then cover tightly with a lid or foil.',
     'Bake for 20 minutes.',
-    'Remove carefully and stir thoroughly, especially around the edges and bottom. Stir in the drained tuna, frozen peas and any herbs or spices you want. If the pasta has absorbed most of the liquid but is still firm, add another 50–100 ml boiling water.',
+    'Remove carefully and stir thoroughly, especially around the edges and bottom. Stir in the drained tuna, frozen peas and any herbs or spices you want. If the pasta has absorbed most of the liquid but is still firm, add a little more boiling water.',
     'Cover again and bake for another 10–15 minutes, until the pasta is almost tender. Wholemeal pasta varies, so check rather than relying only on the clock.',
     'Stir once more, scatter over the cheese and bake uncovered for 8–10 minutes, until bubbling and the pasta is tender.',
     'Leave to stand for 5 minutes before serving so the sauce thickens slightly.'
@@ -48,10 +49,15 @@ export const tunaWholemealPastaBake: Recipe = {
   variations: [
     {
       title: 'Béchamel version',
+      ingredients: [
+        { id: 'butter', name: 'butter', quantity: 25, unit: 'g' },
+        { id: 'plain-flour', name: 'plain flour', quantity: 25, unit: 'g' },
+        { id: 'milk', name: 'milk', quantity: 300, unit: 'ml' }
+      ],
       steps: [
-        'Use only about 200 ml boiling water or stock with the tomatoes at the start instead of 300 ml.',
-        'While the pasta begins baking, melt 25 g butter in a small saucepan, stir in 25 g plain flour and cook for about 1 minute.',
-        'Gradually whisk in 300 ml milk and simmer gently until smooth and lightly thickened.',
+        'Use roughly two-thirds of the scaled boiling water or stock quantity with the tomatoes at the start.',
+        'While the pasta begins baking, melt the measured butter in a small saucepan, stir in the measured plain flour and cook for about 1 minute.',
+        'Gradually whisk in the measured milk and simmer gently until smooth and lightly thickened.',
         'At the 20-minute stir, add the tuna, peas and béchamel to the pasta. Stir thoroughly.',
         'Cover and continue baking for 10–15 minutes, adding a small splash of boiling water only if the pasta still looks too dry.',
         'Top with cheese and finish uncovered for 8–10 minutes.'

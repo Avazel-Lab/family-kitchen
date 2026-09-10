@@ -10,6 +10,7 @@ export const salmonPotatoesBroccoli: Recipe = {
   prepMinutes: 15,
   cookMinutes: 30,
   makes: '2–4 fish portions',
+  basePortions: 4,
   householdUse: 'For 2 adults + toddler, a 4-pack of salmon or fish gives enough flexibility for appetite and usually leaves a useful lunch portion. For a 2-adult night, a 2-pack is ideal. Serve with potatoes and microwave frozen broccoli, peas or sweetcorn.',
   freezer: 'Best eaten fresh. Cooked fish can be chilled promptly and used for lunch the next day.',
   equipment: ['Two-drawer air fryer', 'Microwave'],
@@ -19,12 +20,12 @@ export const salmonPotatoesBroccoli: Recipe = {
     'Potatoes are easy to scale and keep well.'
   ],
   ingredients: [
-    '2–4 salmon fillets or other fish portions',
-    '700 g potatoes, cut into roughly 2 cm chunks or wedges',
-    '250–300 g frozen broccoli, peas or sweetcorn',
-    '1 tbsp olive or rapeseed oil',
-    'Spices, dried herbs and other seasonings as desired',
-    'Lemon or other finishing flavours, optional'
+    { id: 'fish-fillets', name: 'salmon fillet or other fish portion', pluralName: 'salmon fillets or other fish portions', quantity: 4, unit: 'count' },
+    { id: 'potatoes', name: 'potatoes', quantity: 700, unit: 'g', note: 'cut into roughly 2 cm chunks or wedges' },
+    { id: 'frozen-green-veg', name: 'frozen broccoli, peas or sweetcorn', quantity: 300, unit: 'g' },
+    { id: 'cooking-oil', name: 'olive or rapeseed oil', quantity: 1, unit: 'tbsp' },
+    { id: 'fish-seasoning', name: 'Spices, dried herbs and other seasonings as desired' },
+    { id: 'fish-finishing-flavour', name: 'Lemon or other finishing flavours, optional' }
   ],
   quickSteps: [
     'Toss potatoes with oil and seasonings of choice.',

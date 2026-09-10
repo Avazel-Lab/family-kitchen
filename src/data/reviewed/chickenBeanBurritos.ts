@@ -10,6 +10,7 @@ export const chickenBeanBurritos: Recipe = {
   prepMinutes: 25,
   cookMinutes: 25,
   makes: '8 medium burritos',
+  basePortions: 4,
   householdUse: 'Make all 8 using the full pack of wraps. For 2 adults + toddler, expect roughly 3–4 burritos at dinner depending on appetite, then chill or freeze the remainder. For 2 adults, roughly 2–3 burritos should be enough, leaving the rest for lunches or the freezer.',
   freezer: 'Freeze the cooked filling or fully assembled cooled burritos. Reheat thoroughly.',
   equipment: ['Large frying pan', 'Two-drawer air fryer optional', 'Saucepan or rice cooker'],
@@ -20,23 +21,23 @@ export const chickenBeanBurritos: Recipe = {
     'Peppers overlap well with chilli if both are in the same week.'
   ],
   ingredients: [
-    '600 g boneless skinless chicken thighs or breasts, sliced',
-    '1 large onion, sliced',
-    '2 peppers, sliced',
-    '4 garlic cloves, finely chopped or crushed',
-    '1 tbsp smoked paprika',
-    '2 tsp ground cumin',
-    '2 tsp ground coriander',
-    '1 tsp dried oregano',
-    '1 tsp mild chilli powder',
-    '1 x 400 g tin black, pinto or mixed beans, drained and rinsed',
-    '150 g frozen sweetcorn',
-    '120 g dry rice',
-    '8 medium wholemeal or standard tortilla wraps',
-    'Natural yoghurt, grated cheese and lime/lemon to serve, optional'
+    { id: 'chicken', name: 'boneless skinless chicken thighs or breasts', quantity: 600, unit: 'g', note: 'sliced' },
+    { id: 'onion', name: 'large onion', pluralName: 'large onions', quantity: 1, unit: 'count', note: 'sliced' },
+    { id: 'pepper', name: 'pepper', pluralName: 'peppers', quantity: 2, unit: 'count', note: 'sliced' },
+    { id: 'garlic', name: 'garlic clove', pluralName: 'garlic cloves', quantity: 4, unit: 'count', note: 'finely chopped or crushed', alternatives: [{ id: 'garlic-puree', name: 'garlic purée', quantity: 4, unit: 'tsp' }] },
+    { id: 'smoked-paprika', name: 'smoked paprika', quantity: 1, unit: 'tbsp' },
+    { id: 'ground-cumin', name: 'ground cumin', quantity: 2, unit: 'tsp' },
+    { id: 'ground-coriander', name: 'ground coriander', quantity: 2, unit: 'tsp' },
+    { id: 'dried-oregano', name: 'dried oregano', quantity: 1, unit: 'tsp' },
+    { id: 'mild-chilli-powder', name: 'mild chilli powder', quantity: 1, unit: 'tsp' },
+    { id: 'burrito-beans', name: 'black, pinto or mixed beans', quantity: 400, unit: 'g', note: 'drained and rinsed', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'frozen-sweetcorn', name: 'frozen sweetcorn', quantity: 150, unit: 'g' },
+    { id: 'rice', name: 'dry rice', quantity: 120, unit: 'g' },
+    { id: 'tortilla-wrap', name: 'medium tortilla wrap', pluralName: 'medium tortilla wraps', quantity: 8, unit: 'count', note: 'wholemeal or standard' },
+    { id: 'burrito-toppings', name: 'Natural yoghurt, grated cheese and lime/lemon to serve, optional' }
   ],
   quickSteps: [
-    'Cook 120 g dry rice according to the packet.',
+    'Cook the measured rice according to the packet.',
     'Brown the chicken with paprika, cumin, coriander, oregano and mild chilli.',
     'Add onion and peppers; cook until softened, then add garlic.',
     'Stir through beans and frozen sweetcorn just long enough to heat through.',
@@ -65,8 +66,10 @@ export const chickenBeanBurritos: Recipe = {
     },
     {
       title: 'Dried beans',
+      ingredients: [
+        { id: 'dried-burrito-beans', name: 'dried black or pinto beans', quantity: 125, unit: 'g', note: 'use instead of the tinned beans' }
+      ],
       steps: [
-        'Replace the tin with about 125 g dried black or pinto beans.',
         'Soak overnight in plenty of cold water unless the packet says soaking is unnecessary.',
         'Drain, cover with fresh water and cook until completely tender according to the packet.',
         'Drain well, then add at the same point as the tinned beans.'

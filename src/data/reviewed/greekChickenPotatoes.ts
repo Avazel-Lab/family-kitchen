@@ -10,6 +10,7 @@ export const greekChickenPotatoes: Recipe = {
   prepMinutes: 20,
   cookMinutes: 30,
   makes: 'About 5 adult portions',
+  basePortions: 5,
   householdUse: 'For 2 adults + toddler, use roughly half the chicken with potatoes and microwave broccoli or peas, then chill the remaining chicken for lunch or another meal. For 2 adults, use roughly two-fifths of the batch.',
   freezer: 'Chicken freezes well after cooking. Potatoes are better fresh.',
   equipment: ['Two-drawer air fryer or oven', 'Microwave for frozen veg'],
@@ -19,17 +20,17 @@ export const greekChickenPotatoes: Recipe = {
     'One whole lemon is used between zest, juice and serving.'
   ],
   ingredients: [
-    '600 g boneless skinless chicken thigh fillets',
-    '800 g potatoes, cut into wedges or chunks',
-    '1 lemon, zested and juiced',
-    '4 garlic cloves, crushed',
-    '1 tbsp dried oregano',
-    '2 tsp paprika',
-    '2 tbsp olive oil',
-    '300 g frozen broccoli or 200 g frozen peas',
-    'Natural yoghurt to serve, optional',
-    'Black pepper',
-    '1 tsp dried thyme or rosemary, optional'
+    { id: 'chicken-thigh-fillets', name: 'boneless skinless chicken thigh fillets', quantity: 600, unit: 'g' },
+    { id: 'potatoes', name: 'potatoes', quantity: 800, unit: 'g', note: 'cut into wedges or chunks' },
+    { id: 'lemon', name: 'lemon', pluralName: 'lemons', quantity: 1, unit: 'count', note: 'zested and juiced' },
+    { id: 'garlic', name: 'garlic clove', pluralName: 'garlic cloves', quantity: 4, unit: 'count', note: 'crushed', alternatives: [{ id: 'garlic-puree', name: 'garlic purée', quantity: 4, unit: 'tsp' }] },
+    { id: 'dried-oregano', name: 'dried oregano', quantity: 1, unit: 'tbsp' },
+    { id: 'paprika', name: 'paprika', quantity: 2, unit: 'tsp' },
+    { id: 'olive-oil', name: 'olive oil', quantity: 2, unit: 'tbsp' },
+    { id: 'frozen-broccoli', name: 'frozen broccoli', quantity: 300, unit: 'g', alternatives: [{ id: 'frozen-peas', name: 'frozen peas', quantity: 200, unit: 'g' }] },
+    { id: 'natural-yoghurt', name: 'Natural yoghurt to serve, optional' },
+    { id: 'black-pepper', name: 'Black pepper' },
+    { id: 'dried-thyme-rosemary', name: 'dried thyme or rosemary', quantity: 1, unit: 'tsp', note: 'optional' }
   ],
   quickSteps: [
     'Coat chicken with lemon zest/juice, garlic, oregano, paprika and oil; add thyme/rosemary if wanted.',
@@ -40,8 +41,8 @@ export const greekChickenPotatoes: Recipe = {
     'Finish with lemon and optional yoghurt.'
   ],
   method: [
-    'Mix most of the lemon zest and juice with the garlic, oregano, paprika, 1 tbsp olive oil, black pepper and optional thyme or rosemary. Coat the chicken well.',
-    'Toss the potatoes with the remaining 1 tbsp oil and put them in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes.',
+    'Mix most of the lemon zest and juice with the garlic, oregano, paprika, half the olive oil, black pepper and optional thyme or rosemary. Coat the chicken well.',
+    'Toss the potatoes with the remaining olive oil and put them in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes.',
     'When the potatoes have about 15–18 minutes remaining, put the chicken in drawer 2 at 190°C. Turn once during cooking and continue until cooked through.',
     'Microwave the frozen broccoli or peas according to the packet so the potatoes can stay crisp.',
     'Serve the chicken with potatoes and vegetables, finishing with the remaining lemon and natural yoghurt if wanted.'

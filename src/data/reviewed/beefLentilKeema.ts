@@ -10,6 +10,7 @@ export const beefLentilKeema: Recipe = {
   prepMinutes: 20,
   cookMinutes: 30,
   makes: 'About 6 adult portions',
+  basePortions: 6,
   householdUse: 'For 2 adults + toddler, serve roughly half with rice or flatbreads and yoghurt, then chill or freeze the remainder. For 2 adults, use roughly a third and keep the rest for lunches/freezer.',
   freezer: 'Excellent. Freeze without rice, flatbreads or yoghurt.',
   equipment: ['Large frying pan or saucepan', 'Pressure cooker optional'],
@@ -19,21 +20,21 @@ export const beefLentilKeema: Recipe = {
     'Spices are dry-store ingredients, so use the full flavour profile without simplifying it around pack sizes.'
   ],
   ingredients: [
-    '500 g beef mince, 5% or 12% fat',
-    '1 large onion, diced',
-    '2 garlic cloves, finely chopped',
-    '20 g / about 1 tbsp ginger purée',
-    '1 tbsp garam masala',
-    '2 tsp ground cumin',
-    '2 tsp ground coriander',
-    '1 tsp turmeric',
-    '2 tsp mild curry powder',
-    '1 tbsp tomato purée',
-    '1 x 400 g tin chopped tomatoes',
-    '1 x 400 g tin green or brown lentils, drained and rinsed',
-    '200 g frozen peas',
-    '100 ml water',
-    'Rice or flatbreads and natural yoghurt, to serve'
+    { id: 'beef-mince', name: 'beef mince', quantity: 500, unit: 'g', note: '5% or 12% fat' },
+    { id: 'onion', name: 'large onion', pluralName: 'large onions', quantity: 1, unit: 'count', note: 'diced' },
+    { id: 'garlic', name: 'garlic clove', pluralName: 'garlic cloves', quantity: 2, unit: 'count', note: 'finely chopped', alternatives: [{ id: 'garlic-puree', name: 'garlic purée', quantity: 2, unit: 'tsp' }] },
+    { id: 'ginger-puree', name: 'ginger purée', quantity: 20, unit: 'g', note: 'about 1 tbsp at the default size' },
+    { id: 'garam-masala', name: 'garam masala', quantity: 1, unit: 'tbsp' },
+    { id: 'ground-cumin', name: 'ground cumin', quantity: 2, unit: 'tsp' },
+    { id: 'ground-coriander', name: 'ground coriander', quantity: 2, unit: 'tsp' },
+    { id: 'turmeric', name: 'turmeric', quantity: 1, unit: 'tsp' },
+    { id: 'mild-curry-powder', name: 'mild curry powder', quantity: 2, unit: 'tsp' },
+    { id: 'tomato-puree', name: 'tomato purée', quantity: 1, unit: 'tbsp' },
+    { id: 'chopped-tomatoes', name: 'chopped tomatoes', quantity: 400, unit: 'g', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'green-brown-lentils', name: 'green or brown lentils', quantity: 400, unit: 'g', note: 'drained and rinsed', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
+    { id: 'frozen-peas', name: 'frozen peas', quantity: 200, unit: 'g' },
+    { id: 'water', name: 'water', quantity: 100, unit: 'ml' },
+    { id: 'keema-serving', name: 'Rice or flatbreads and natural yoghurt, to serve' }
   ],
   quickSteps: [
     'Brown beef well; add onion and soften.',
@@ -67,8 +68,10 @@ export const beefLentilKeema: Recipe = {
     },
     {
       title: 'Dried lentils',
+      ingredients: [
+        { id: 'dried-green-brown-lentils', name: 'dried green or brown lentils', quantity: 100, unit: 'g', note: 'use instead of the tinned lentils' }
+      ],
       steps: [
-        'Replace the tin with about 100 g dried green or brown lentils.',
         'Cook them separately in water until tender, usually around 20–30 minutes depending on type.',
         'Drain, then use in place of the tinned lentils.',
         'Follow the packet instructions if the lentils specify a different cooking method.'

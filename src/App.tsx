@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { recipes as baseRecipes } from './data/recipes'
-import { excludedRecipeIds, reviewedRecipes } from './data/reviewedRecipes'
+import { recipes } from './data/recipes'
+import { formatIngredient, formatPortionCount, ingredientSearchTerms } from './recipeScaling'
 import type { Recipe } from './types'
-
-const recipes = baseRecipes
-  .filter((recipe) => !excludedRecipeIds.has(recipe.id))
-  .map((recipe) => reviewedRecipes[recipe.id] ?? recipe)
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -66,7 +62,12 @@ function RecipeList() {
       if (!matchesFilter) return false
       if (!normalised) return true
 
-      return [recipe.title, recipe.summary, recipe.category, ...recipe.tags]
+      const ingredientTerms = [
+        ...recipe.ingredients.flatMap(ingredientSearchTerms),
+        ...recipe.variations.flatMap((variation) => variation.ingredients?.flatMap(ingredientSearchTerms) ?? [])
+      ]
+
+      return [recipe.title, recipe.summary, recipe.category, ...recipe.tags, ...ingredientTerms]
         .join(' ')
         .toLowerCase()
         .includes(normalised)
@@ -190,6 +191,8 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 
 function RecipePage({ recipe }: { recipe: Recipe }) {
   const [shareText, setShareText] = useState('Share')
+  const [portions, setPortions] = useState(recipe.basePortions)
+  const atDefaultPortions = Math.abs(portions - recipe.basePortions) < 0.001
 
   async function shareRecipe() {
     const url = window.location.href
@@ -223,10 +226,12 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
         <div className="recipe-stats">
           <Stat label="Prep" value={`${recipe.prepMinutes} min`} />
           <Stat label="Cook" value={`${recipe.cookMinutes} min`} />
-          <Stat label="Makes" value={recipe.makes} />
+          <Stat label="Default" value={recipe.makes} />
           <Stat label="Freezer" value={recipe.freezer.split('.')[0]} />
         </div>
       </header>
+
+      <PortionSelector recipe={recipe} portions={portions} onChange={setPortions} />
 
       <section className="quick-panel">
         <p className="eyebrow">Quick steps</p>
@@ -238,12 +243,15 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
       <section className="recipe-section household-note">
         <h2>Household use</h2>
         <p>{recipe.householdUse}</p>
+        {!atDefaultPortions && <p className="default-context-note">This guidance describes the default {formatPortionCount(recipe.basePortions)}-portion recipe.</p>}
       </section>
 
       <section className="recipe-section">
         <h2>Ingredients</h2>
         <ul className="ingredient-list">
-          {recipe.ingredients.map((ingredient) => <li key={ingredient}>{displayIngredient(ingredient)}</li>)}
+          {recipe.ingredients.map((ingredient, index) => (
+            <li key={`${ingredient.id}-${index}`}>{formatIngredient(ingredient, portions, recipe.basePortions)}</li>
+          ))}
         </ul>
       </section>
 
@@ -255,7 +263,8 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
       </section>
 
       <section className="recipe-section">
-        <h2>Pack-size notes</h2>
+        <h2>Default pack-size notes</h2>
+        <p className="pack-note-intro">These notes refer to the reviewed default of {formatPortionCount(recipe.basePortions)} portions.</p>
         <ul>
           {recipe.packNotes.map((note) => <li key={note}>{note}</li>)}
         </ul>
@@ -268,6 +277,16 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
             {recipe.variations.map((variation) => (
               <div className="variation-card" key={variation.title}>
                 <h3>{variation.title}</h3>
+                {variation.ingredients && variation.ingredients.length > 0 && (
+                  <div className="variation-ingredients">
+                    <strong>Variation ingredients</strong>
+                    <ul>
+                      {variation.ingredients.map((ingredient, index) => (
+                        <li key={`${ingredient.id}-${index}`}>{formatIngredient(ingredient, portions, recipe.basePortions)}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {variation.text && <p>{variation.text}</p>}
                 {variation.steps && (
                   <ol>
@@ -295,6 +314,59 @@ function RecipePage({ recipe }: { recipe: Recipe }) {
         <p><strong>Freezer:</strong> {recipe.freezer}</p>
       </section>
     </article>
+  )
+}
+
+function PortionSelector({
+  recipe,
+  portions,
+  onChange
+}: {
+  recipe: Recipe
+  portions: number
+  onChange: (portions: number) => void
+}) {
+  const step = 0.5
+  const atDefault = Math.abs(portions - recipe.basePortions) < 0.001
+
+  function setAmount(value: number) {
+    if (!Number.isFinite(value)) return
+    const snapped = Math.max(step, Math.round(value / step) * step)
+    onChange(snapped)
+  }
+
+  return (
+    <section className="portion-panel" aria-label="Scale recipe portions">
+      <div className="portion-copy">
+        <p className="eyebrow">Scale recipe</p>
+        <strong>Portions</strong>
+        <p>
+          Default: {formatPortionCount(recipe.basePortions)}. The default keeps the reviewed quantities chosen around sensible household and fresh-produce pack sizes.
+        </p>
+      </div>
+      <div className="portion-controls">
+        <button type="button" aria-label="Decrease portions" onClick={() => setAmount(portions - step)}>−</button>
+        <input
+          type="number"
+          min={step}
+          step={step}
+          value={portions}
+          aria-label="Portions"
+          onChange={(event) => {
+            const value = Number(event.target.value)
+            if (value > 0) onChange(value)
+          }}
+          onBlur={() => setAmount(portions)}
+        />
+        <button type="button" aria-label="Increase portions" onClick={() => setAmount(portions + step)}>+</button>
+      </div>
+      {!atDefault && (
+        <div className="portion-scaled-note">
+          <span>Ingredients are scaled to {formatPortionCount(portions)} portions.</span>
+          <button type="button" onClick={() => onChange(recipe.basePortions)}>Reset</button>
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -360,14 +432,6 @@ function RecipeFeedback({ recipe }: { recipe: Recipe }) {
       </p>
     </section>
   )
-}
-
-function displayIngredient(ingredient: string) {
-  const garlicMatch = ingredient.match(/^(\d+) garlic cloves\b/)
-  if (!garlicMatch) return ingredient
-
-  const cloves = Number(garlicMatch[1])
-  return `${ingredient} (or about ${cloves} tsp garlic purée)`
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
