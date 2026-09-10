@@ -64,7 +64,10 @@ export const lentilSpaghettiBolognese: Recipe = {
       ]
     },
     {
+      id: 'dried-lentils',
       title: 'Dried lentils',
+      planningOption: true,
+      replacesIngredientIds: ['green-brown-lentils'],
       ingredients: [
         { id: 'dried-green-brown-lentils', name: 'dried green or brown lentils', quantity: 100, unit: 'g', note: 'use instead of the tinned lentils' }
       ],
