@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { recipes } from './data/recipes'
 import { loadMealPlan, normalisePlanPortions, recipePlanHref, saveMealPlan } from './mealPlan'
+import {
+  activeIngredientsForPlan,
+  plannedChoiceSummary,
+  plannedVariation,
+  planningVariations,
+  shoppingChoiceIngredients
+} from './planOptions'
 import { formatIngredient, formatPortionCount, ingredientSearchTerms } from './recipeScaling'
 import ShoppingPage from './ShoppingPage'
 import type { MealPlanItem, Recipe } from './types'
@@ -61,8 +68,8 @@ function App() {
   function saveRecipeToPlan(recipeId: string, portions: number) {
     const normalisedPortions = normalisePlanPortions(portions)
     setMealPlan((current) => {
-      const exists = current.some((item) => item.recipeId === recipeId)
-      if (!exists) return [...current, { recipeId, portions: normalisedPortions }]
+      const existing = current.find((item) => item.recipeId === recipeId)
+      if (!existing) return [...current, { recipeId, portions: normalisedPortions }]
       return current.map((item) =>
         item.recipeId === recipeId ? { ...item, portions: normalisedPortions } : item
       )
@@ -74,6 +81,31 @@ function App() {
     setMealPlan((current) => current.map((item) =>
       item.recipeId === recipeId ? { ...item, portions: normalisedPortions } : item
     ))
+  }
+
+  function updatePlanVariation(recipeId: string, variationId: string) {
+    setMealPlan((current) => current.map((item) => {
+      if (item.recipeId !== recipeId) return item
+      const next = { ...item }
+      if (variationId) next.variationId = variationId
+      else delete next.variationId
+      return next
+    }))
+  }
+
+  function updatePlanIngredientChoice(recipeId: string, ingredientId: string, alternativeId: string) {
+    setMealPlan((current) => current.map((item) => {
+      if (item.recipeId !== recipeId) return item
+
+      const choices = { ...(item.ingredientChoices ?? {}) }
+      if (alternativeId) choices[ingredientId] = alternativeId
+      else delete choices[ingredientId]
+
+      const next = { ...item }
+      if (Object.keys(choices).length > 0) next.ingredientChoices = choices
+      else delete next.ingredientChoices
+      return next
+    }))
   }
 
   function removeFromPlan(recipeId: string) {
@@ -88,18 +120,23 @@ function App() {
       <PlanPage
         plan={mealPlan}
         onChangePortions={updatePlanPortions}
+        onChangeVariation={updatePlanVariation}
+        onChangeIngredientChoice={updatePlanIngredientChoice}
         onRemove={removeFromPlan}
         onClear={() => setMealPlan([])}
       />
     )
   } else if (selected) {
     const keyPortions = route.portions === undefined ? 'default' : route.portions
+    const keyChoices = selectedPlanItem
+      ? `${selectedPlanItem.variationId ?? ''}-${JSON.stringify(selectedPlanItem.ingredientChoices ?? {})}`
+      : 'none'
     page = (
       <RecipePage
         recipe={selected}
-        key={`${selected.id}-${keyPortions}`}
+        key={`${selected.id}-${keyPortions}-${keyChoices}`}
         initialPortions={route.portions}
-        plannedPortions={selectedPlanItem?.portions}
+        plannedItem={selectedPlanItem}
         onSaveToPlan={saveRecipeToPlan}
       />
     )
@@ -214,11 +251,15 @@ function RecipeList() {
 function PlanPage({
   plan,
   onChangePortions,
+  onChangeVariation,
+  onChangeIngredientChoice,
   onRemove,
   onClear
 }: {
   plan: MealPlanItem[]
   onChangePortions: (recipeId: string, portions: number) => void
+  onChangeVariation: (recipeId: string, variationId: string) => void
+  onChangeIngredientChoice: (recipeId: string, ingredientId: string, alternativeId: string) => void
   onRemove: (recipeId: string) => void
   onClear: () => void
 }) {
@@ -236,7 +277,7 @@ function PlanPage({
       <section className="plan-hero">
         <p className="eyebrow">Meal planning</p>
         <h1>Cooking plan</h1>
-        <p>Save the recipes and portion sizes you intend to cook. This plan is the source for the consolidated shopping list.</p>
+        <p>Save exactly how you intend to cook each meal: portions, ingredient-changing variations and rice choice. The shopping list and planned recipe view both use this configuration.</p>
       </section>
 
       {plannedRecipes.length === 0 ? (
@@ -257,30 +298,68 @@ function PlanPage({
           </div>
 
           <section className="plan-list" aria-label="Planned recipes">
-            {plannedRecipes.map(({ item, recipe }) => (
-              <article className="plan-item" key={recipe.id}>
-                <div className="plan-item-main">
-                  <div className="card-topline">
-                    <span className="category-pill">{recipe.category}</span>
-                    {recipe.season && recipe.season !== 'all-year' && <span className="season-pill">{recipe.season}</span>}
+            {plannedRecipes.map(({ item, recipe }) => {
+              const variations = planningVariations(recipe)
+              const ingredientChoices = shoppingChoiceIngredients(recipe)
+              const choiceSummary = plannedChoiceSummary(recipe, item)
+
+              return (
+                <article className="plan-item" key={recipe.id}>
+                  <div className="plan-item-main">
+                    <div className="card-topline">
+                      <span className="category-pill">{recipe.category}</span>
+                      {recipe.season && recipe.season !== 'all-year' && <span className="season-pill">{recipe.season}</span>}
+                    </div>
+                    <a className="plan-item-title" href={recipePlanHref(recipe.id, item.portions)}>
+                      <h2>{recipe.title}</h2>
+                    </a>
+                    <p>{formatPortionCount(item.portions)} portions{choiceSummary.length ? ` · ${choiceSummary.join(' · ')}` : ''}</p>
                   </div>
-                  <a className="plan-item-title" href={recipePlanHref(recipe.id, item.portions)}>
-                    <h2>{recipe.title}</h2>
-                  </a>
-                  <p>{formatPortionCount(item.portions)} portions</p>
-                </div>
 
-                <PlanPortionControls
-                  portions={item.portions}
-                  onChange={(portions) => onChangePortions(recipe.id, portions)}
-                />
+                  <div className="plan-item-config">
+                    <PlanPortionControls
+                      portions={item.portions}
+                      onChange={(portions) => onChangePortions(recipe.id, portions)}
+                    />
 
-                <div className="plan-item-actions">
-                  <a href={recipePlanHref(recipe.id, item.portions)}>Open recipe</a>
-                  <button type="button" onClick={() => onRemove(recipe.id)}>Remove</button>
-                </div>
-              </article>
-            ))}
+                    {variations.length > 0 && (
+                      <label className="plan-choice-editor">
+                        <span>Meal option</span>
+                        <select
+                          value={item.variationId ?? ''}
+                          onChange={(event) => onChangeVariation(recipe.id, event.target.value)}
+                        >
+                          <option value="">Standard recipe</option>
+                          {variations.map((variation) => (
+                            <option value={variation.id} key={variation.id}>{variation.title}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+
+                    {ingredientChoices.map((ingredient) => (
+                      <label className="plan-choice-editor" key={ingredient.id}>
+                        <span>Rice</span>
+                        <select
+                          value={item.ingredientChoices?.[ingredient.id] ?? ''}
+                          onChange={(event) => onChangeIngredientChoice(recipe.id, ingredient.id, event.target.value)}
+                        >
+                          <option value="">{ingredient.name}</option>
+                          {ingredient.alternatives?.map((alternative) => (
+                            <option value={alternative.id} key={alternative.id}>{alternative.name}</option>
+                          ))}
+                        </select>
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="plan-item-actions">
+                    <a href={recipePlanHref(recipe.id, item.portions)}>Open planned recipe</a>
+                    <button type="button" onClick={() => onRemove(recipe.id)}>Remove</button>
+                  </div>
+                </article>
+              )
+            })}
           </section>
         </>
       )}
@@ -362,18 +441,24 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 function RecipePage({
   recipe,
   initialPortions,
-  plannedPortions,
+  plannedItem,
   onSaveToPlan
 }: {
   recipe: Recipe
   initialPortions?: number
-  plannedPortions?: number
+  plannedItem?: MealPlanItem
   onSaveToPlan: (recipeId: string, portions: number) => void
 }) {
   const [shareText, setShareText] = useState('Share')
   const [portions, setPortions] = useState(() => normalisePlanPortions(initialPortions ?? recipe.basePortions))
   const atDefaultPortions = Math.abs(portions - recipe.basePortions) < 0.001
-  const matchesPlan = plannedPortions !== undefined && Math.abs(portions - plannedPortions) < 0.001
+  const matchesPlan = plannedItem !== undefined && Math.abs(portions - plannedItem.portions) < 0.001
+  const openedFromPlan = initialPortions !== undefined && plannedItem !== undefined
+  const activePlanItem = openedFromPlan ? plannedItem : undefined
+  const activeIngredients = activeIngredientsForPlan(recipe, activePlanItem)
+  const selectedVariation = plannedVariation(recipe, activePlanItem)
+  const activeChoiceSummary = plannedChoiceSummary(recipe, activePlanItem)
+  const savedChoiceSummary = plannedChoiceSummary(recipe, plannedItem)
 
   async function shareRecipe() {
     const url = window.location.href
@@ -393,7 +478,7 @@ function RecipePage({
   return (
     <article className="recipe-page">
       <div className="recipe-actions">
-        <a className="back-link" href="#/">← Recipes</a>
+        <a className="back-link" href={openedFromPlan ? '#/plan' : '#/'}>← {openedFromPlan ? 'Plan' : 'Recipes'}</a>
         <button className="share-button" type="button" onClick={shareRecipe}>{shareText}</button>
       </div>
 
@@ -418,11 +503,14 @@ function RecipePage({
         <div>
           <p className="eyebrow">Cooking plan</p>
           <strong>
-            {plannedPortions === undefined
+            {plannedItem === undefined
               ? `Save ${formatPortionCount(portions)} portions`
-              : `${formatPortionCount(plannedPortions)} portions currently saved`}
+              : `${formatPortionCount(plannedItem.portions)} portions currently saved`}
           </strong>
-          <p>Save this recipe and portion count to the cooking plan and consolidated shopping list.</p>
+          <p>
+            Save this portion count to the cooking plan.
+            {savedChoiceSummary.length > 0 && ` Saved choices: ${savedChoiceSummary.join(', ')}.`}
+          </p>
         </div>
         <div className="plan-action-buttons">
           <button
@@ -430,11 +518,19 @@ function RecipePage({
             disabled={matchesPlan}
             onClick={() => onSaveToPlan(recipe.id, portions)}
           >
-            {matchesPlan ? 'Saved in plan' : plannedPortions === undefined ? 'Add to plan' : 'Update plan'}
+            {matchesPlan ? 'Saved in plan' : plannedItem === undefined ? 'Add to plan' : 'Update plan'}
           </button>
           <a href="#/plan">View plan</a>
         </div>
       </section>
+
+      {openedFromPlan && (
+        <section className="planned-cook-panel">
+          <p className="eyebrow">Planned cook</p>
+          <strong>{formatPortionCount(plannedItem.portions)} portions</strong>
+          <p>{activeChoiceSummary.length > 0 ? activeChoiceSummary.join(' · ') : 'Standard recipe choices'}</p>
+        </section>
+      )}
 
       <section className="quick-panel">
         <p className="eyebrow">Quick steps</p>
@@ -450,9 +546,9 @@ function RecipePage({
       </section>
 
       <section className="recipe-section">
-        <h2>Ingredients</h2>
+        <h2>{openedFromPlan ? 'Planned ingredients' : 'Ingredients'}</h2>
         <ul className="ingredient-list">
-          {recipe.ingredients.map((ingredient, index) => (
+          {activeIngredients.map((ingredient, index) => (
             <li key={`${ingredient.id}-${index}`}>{formatIngredient(ingredient, portions, recipe.basePortions)}</li>
           ))}
         </ul>
@@ -463,6 +559,18 @@ function RecipePage({
         <ol className="method-list">
           {recipe.method.map((step) => <li key={step}>{step}</li>)}
         </ol>
+
+        {selectedVariation && (
+          <div className="selected-variation-method">
+            <h3>Planned option: {selectedVariation.title}</h3>
+            {selectedVariation.text && <p>{selectedVariation.text}</p>}
+            {selectedVariation.steps && (
+              <ol>
+                {selectedVariation.steps.map((step) => <li key={step}>{step}</li>)}
+              </ol>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="recipe-section">
@@ -478,8 +586,12 @@ function RecipePage({
           <h2>Variations</h2>
           <div className="variation-grid">
             {recipe.variations.map((variation) => (
-              <div className="variation-card" key={variation.title}>
+              <div
+                className={selectedVariation?.title === variation.title ? 'variation-card selected' : 'variation-card'}
+                key={variation.title}
+              >
                 <h3>{variation.title}</h3>
+                {selectedVariation?.title === variation.title && <p className="selected-option-label">Selected in plan</p>}
                 {variation.ingredients && variation.ingredients.length > 0 && (
                   <div className="variation-ingredients">
                     <strong>Variation ingredients</strong>
