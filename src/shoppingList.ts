@@ -1,3 +1,4 @@
+import { activeIngredientsForPlan } from './planOptions'
 import { scaleIngredientQuantity } from './recipeScaling'
 import type { MealPlanItem, PurchaseUnit, Recipe, RecipeIngredient } from './types'
 
@@ -9,9 +10,6 @@ export type ShoppingCategory =
   | 'Tins & jars'
   | 'Dry store & seasonings'
   | 'Other'
-
-export type PlannedRecipeOptions = Record<string, string | undefined>
-export type PlannedIngredientChoices = Record<string, Record<string, string | undefined> | undefined>
 
 export type ShoppingListItem = {
   id: string
@@ -34,28 +32,14 @@ export const shoppingCategoryOrder: ShoppingCategory[] = [
   'Other'
 ]
 
-export function buildShoppingList(
-  plan: MealPlanItem[],
-  recipes: Recipe[],
-  selectedOptions: PlannedRecipeOptions = {},
-  ingredientChoices: PlannedIngredientChoices = {}
-): ShoppingListItem[] {
+export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): ShoppingListItem[] {
   const combined = new Map<string, Omit<ShoppingListItem, 'category' | 'stateKey'>>()
 
   for (const planned of plan) {
     const recipe = recipes.find((candidate) => candidate.id === planned.recipeId)
     if (!recipe) continue
 
-    const selectedVariation = recipe.variations.find((variation) =>
-      variation.planningOption && variation.id && variation.id === selectedOptions[recipe.id]
-    )
-    const replacedIngredientIds = new Set(selectedVariation?.replacesIngredientIds ?? [])
-    const activeIngredients = [
-      ...recipe.ingredients.filter((ingredient) => !replacedIngredientIds.has(ingredient.id)),
-      ...(selectedVariation?.ingredients ?? [])
-    ].map((ingredient) => selectedIngredientForShopping(recipe.id, ingredient, ingredientChoices))
-
-    for (const ingredient of activeIngredients) {
+    for (const ingredient of activeIngredientsForPlan(recipe, planned)) {
       if (!shouldIncludeInShoppingList(ingredient)) continue
 
       const quantity = scaleIngredientQuantity(ingredient, planned.portions, recipe.basePortions)
@@ -132,20 +116,6 @@ export function formatShoppingAmount(item: ShoppingListItem) {
 
 export function formatShoppingLine(item: ShoppingListItem) {
   return `${shoppingDisplayName(item)} — ${formatShoppingAmount(item)}`
-}
-
-function selectedIngredientForShopping(
-  recipeId: string,
-  ingredient: RecipeIngredient,
-  ingredientChoices: PlannedIngredientChoices
-): RecipeIngredient {
-  if (!ingredient.shoppingChoice) return ingredient
-
-  const selectedAlternativeId = ingredientChoices[recipeId]?.[ingredient.id]
-  if (!selectedAlternativeId) return ingredient
-
-  const alternative = ingredient.alternatives?.find((candidate) => candidate.id === selectedAlternativeId)
-  return alternative ?? ingredient
 }
 
 function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
