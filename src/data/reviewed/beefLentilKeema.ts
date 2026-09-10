@@ -34,7 +34,18 @@ export const beefLentilKeema: Recipe = {
     { id: 'green-brown-lentils', name: 'green or brown lentils', quantity: 400, unit: 'g', note: 'drained and rinsed', purchaseUnit: { label: 'tin', quantity: 400, unit: 'g' } },
     { id: 'frozen-peas', name: 'frozen peas', quantity: 200, unit: 'g' },
     { id: 'water', name: 'water', quantity: 100, unit: 'ml' },
-    { id: 'keema-serving', name: 'Rice or flatbreads and natural yoghurt, to serve' }
+    {
+      id: 'rice',
+      name: 'dry rice',
+      quantity: 360,
+      unit: 'g',
+      shoppingChoice: true,
+      note: 'to serve; flatbreads also work',
+      alternatives: [
+        { id: 'microwave-rice', name: 'microwave rice', quantity: 750, unit: 'g', purchaseUnit: { label: 'pouch', quantity: 250, unit: 'g' } }
+      ]
+    },
+    { id: 'keema-serving-extras', name: 'Natural yoghurt or other serving extras, optional' }
   ],
   quickSteps: [
     'Brown beef well; add onion and soften.',
