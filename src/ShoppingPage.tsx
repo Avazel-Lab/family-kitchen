@@ -15,7 +15,8 @@ const CHECKED_STORAGE_KEY = 'family-kitchen:shopping-checked:v1'
 export default function ShoppingPage({ plan }: { plan: MealPlanItem[] }) {
   const items = useMemo(() => buildShoppingList(plan, recipes), [plan])
   const [checked, setChecked] = useState<Set<string>>(loadCheckedItems)
-  const [copyStatus, setCopyStatus] = useState('Copy list')
+  const [hideChecked, setHideChecked] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'all' | 'unchecked' | 'failed'>('idle')
 
   useEffect(() => {
     const validKeys = new Set(items.map((item) => item.stateKey))
@@ -35,8 +36,9 @@ export default function ShoppingPage({ plan }: { plan: MealPlanItem[] }) {
   }, [checked])
 
   const checkedCount = items.filter((item) => checked.has(item.stateKey)).length
+  const visibleItems = hideChecked ? items.filter((item) => !checked.has(item.stateKey)) : items
   const groupedItems = shoppingCategoryOrder
-    .map((category) => ({ category, items: items.filter((item) => item.category === category) }))
+    .map((category) => ({ category, items: visibleItems.filter((item) => item.category === category) }))
     .filter((group) => group.items.length > 0)
 
   function toggleItem(key: string) {
@@ -52,32 +54,33 @@ export default function ShoppingPage({ plan }: { plan: MealPlanItem[] }) {
     setChecked(new Set())
   }
 
-  async function copyList() {
-    const text = items.map(formatShoppingLine).join('\n')
+  async function copyList(uncheckedOnly = false) {
+    const source = uncheckedOnly ? items.filter((item) => !checked.has(item.stateKey)) : items
+    const text = source.map(formatShoppingLine).join('\n')
     if (!text) return
 
     try {
       await writeClipboardText(text)
-      setCopyStatus('Copied')
+      setCopyStatus(uncheckedOnly ? 'unchecked' : 'all')
     } catch {
-      setCopyStatus('Copy failed')
+      setCopyStatus('failed')
     }
 
-    window.setTimeout(() => setCopyStatus('Copy list'), 1800)
+    window.setTimeout(() => setCopyStatus('idle'), 1800)
   }
 
   if (plan.length === 0) {
     return (
       <div className="shopping-page">
-        <section className="shopping-hero">
+        <section className="page-hero compact-hero">
           <p className="eyebrow">Shopping</p>
           <h1>Shopping list</h1>
-          <p>The shopping list is generated from the recipes, portions and choices in your cooking plan.</p>
+          <p>Generated from the recipes, portions and choices in your cooking plan.</p>
         </section>
-        <section className="shopping-empty">
+        <section className="empty-panel">
           <h2>No cooking plan yet</h2>
           <p>Add recipes to the plan first, then their ingredients will be consolidated here.</p>
-          <a href="#/plan">Go to cooking plan</a>
+          <a className="primary-link" href="#/plan">Go to cooking plan</a>
         </section>
       </div>
     )
@@ -85,62 +88,65 @@ export default function ShoppingPage({ plan }: { plan: MealPlanItem[] }) {
 
   return (
     <div className="shopping-page">
-      <section className="shopping-hero">
+      <section className="page-hero compact-hero">
         <p className="eyebrow">Shopping</p>
         <h1>Shopping list</h1>
-        <p>
-          Consolidated from {plan.length} {plan.length === 1 ? 'planned recipe' : 'planned recipes'}, including the meal options and rice choices saved in the cooking plan.
-        </p>
+        <p>{plan.length} {plan.length === 1 ? 'planned recipe' : 'planned recipes'} consolidated into one list.</p>
       </section>
 
-      <div className="shopping-toolbar">
+      <div className="page-toolbar shopping-toolbar">
         <div>
           <strong>{items.length} {items.length === 1 ? 'item' : 'items'}</strong>
           <span>{checkedCount} checked</span>
         </div>
         <div className="shopping-toolbar-actions">
-          <button className="shopping-copy-button" type="button" onClick={copyList}>{copyStatus}</button>
+          <button className="primary-button compact-button" type="button" onClick={() => copyList(false)}>
+            {copyStatus === 'all' ? 'Copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy list'}
+          </button>
+          {checkedCount > 0 && (
+            <button type="button" onClick={() => copyList(true)}>{copyStatus === 'unchecked' ? 'Copied' : 'Copy unchecked'}</button>
+          )}
+          {checkedCount > 0 && <button type="button" onClick={() => setHideChecked((current) => !current)}>{hideChecked ? 'Show checked' : 'Hide checked'}</button>}
           <a href="#/plan">Edit plan</a>
           {checkedCount > 0 && <button type="button" onClick={clearTicks}>Clear ticks</button>}
         </div>
       </div>
 
-      <div className="shopping-guidance">
-        <strong>How quantities work</strong>
+      <details className="shopping-help">
+        <summary>How this list works</summary>
         <p>
-          Normal ingredients show the quantity required. Fixed tins, jars and microwave-rice pouches are rounded up only where the recipe data says they are fixed units. Change meal options and rice choices in the cooking plan; this list updates automatically. “Copy list” copies one shopping item per line for easy pasting into Google Keep.
+          Normal ingredients show the quantity required. Fixed tins, jars and microwave-rice pouches round up only at purchase time. Items without a fixed quantity are kept separately under “Check cupboard”. Copying uses one plain-text item per line for Google Keep.
         </p>
-      </div>
+      </details>
 
-      <div className="shopping-groups">
-        {groupedItems.map((group) => (
-          <section className="shopping-group" key={group.category}>
-            <h2>{group.category}</h2>
-            <div className="shopping-items">
-              {group.items.map((item) => {
-                const isChecked = checked.has(item.stateKey)
-                return (
-                  <label className={isChecked ? 'shopping-item checked' : 'shopping-item'} key={item.stateKey}>
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => toggleItem(item.stateKey)}
-                    />
-                    <span className="shopping-item-copy">
-                      <strong>{shoppingDisplayName(item)}</strong>
-                      <span>{formatShoppingAmount(item)}</span>
-                    </span>
-                  </label>
-                )
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
-
-      <p className="shopping-footer-note">
-        This list follows the current cooking plan. Changing a recipe, its portions or a planned choice recalculates quantities automatically; changed quantities return unchecked so they are not accidentally treated as already bought.
-      </p>
+      {visibleItems.length === 0 ? (
+        <section className="shopping-complete">
+          <strong>Everything is checked off.</strong>
+          <button type="button" onClick={() => setHideChecked(false)}>Show checked items</button>
+        </section>
+      ) : (
+        <div className="shopping-groups">
+          {groupedItems.map((group) => (
+            <section className={group.category === 'Check cupboard' ? 'shopping-group cupboard-group' : 'shopping-group'} key={group.category}>
+              <h2>{group.category}</h2>
+              <div className="shopping-items">
+                {group.items.map((item) => {
+                  const isChecked = checked.has(item.stateKey)
+                  return (
+                    <label className={isChecked ? 'shopping-item checked' : 'shopping-item'} key={item.stateKey}>
+                      <input type="checkbox" checked={isChecked} onChange={() => toggleItem(item.stateKey)} />
+                      <span className="shopping-item-copy">
+                        <strong>{shoppingDisplayName(item)}</strong>
+                        <span>{formatShoppingAmount(item)}</span>
+                      </span>
+                    </label>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
