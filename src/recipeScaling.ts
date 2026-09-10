@@ -56,6 +56,12 @@ export function formatPortionCount(value: number) {
   return formatQuarterNumber(value)
 }
 
+export function pluralisePurchaseLabel(label: string) {
+  if (/(s|x|z|ch|sh)$/i.test(label)) return `${label}es`
+  if (/[^aeiou]y$/i.test(label)) return `${label.slice(0, -1)}ies`
+  return `${label}s`
+}
+
 function formatIngredientAmount(ingredient: IngredientAmount, quantity?: number) {
   if (quantity === undefined) return ingredient.name
 
@@ -78,7 +84,7 @@ function exactPurchaseUnitText(ingredient: IngredientAmount, quantity: number) {
   const roundedUnits = Math.round(units)
   if (roundedUnits < 1 || Math.abs(units - roundedUnits) > 0.001) return undefined
 
-  const label = roundedUnits === 1 ? purchaseUnit.label : `${purchaseUnit.label}s`
+  const label = roundedUnits === 1 ? purchaseUnit.label : pluralisePurchaseLabel(purchaseUnit.label)
   return `${roundedUnits} × ${formatMeasuredQuantity(purchaseUnit.quantity, purchaseUnit.unit)} ${label}`
 }
 
