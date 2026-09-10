@@ -10,6 +10,8 @@ export type ShoppingCategory =
   | 'Dry store & seasonings'
   | 'Other'
 
+export type PlannedRecipeOptions = Record<string, string | undefined>
+
 export type ShoppingListItem = {
   id: string
   name: string
@@ -31,14 +33,27 @@ export const shoppingCategoryOrder: ShoppingCategory[] = [
   'Other'
 ]
 
-export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): ShoppingListItem[] {
+export function buildShoppingList(
+  plan: MealPlanItem[],
+  recipes: Recipe[],
+  selectedOptions: PlannedRecipeOptions = {}
+): ShoppingListItem[] {
   const combined = new Map<string, Omit<ShoppingListItem, 'category' | 'stateKey'>>()
 
   for (const planned of plan) {
     const recipe = recipes.find((candidate) => candidate.id === planned.recipeId)
     if (!recipe) continue
 
-    for (const ingredient of recipe.ingredients) {
+    const selectedVariation = recipe.variations.find((variation) =>
+      variation.planningOption && variation.id && variation.id === selectedOptions[recipe.id]
+    )
+    const replacedIngredientIds = new Set(selectedVariation?.replacesIngredientIds ?? [])
+    const activeIngredients = [
+      ...recipe.ingredients.filter((ingredient) => !replacedIngredientIds.has(ingredient.id)),
+      ...(selectedVariation?.ingredients ?? [])
+    ]
+
+    for (const ingredient of activeIngredients) {
       if (!shouldIncludeInShoppingList(ingredient)) continue
 
       const quantity = scaleIngredientQuantity(ingredient, planned.portions, recipe.basePortions)
@@ -113,6 +128,10 @@ export function formatShoppingAmount(item: ShoppingListItem) {
   return formatMeasuredQuantity(quantity, item.unit)
 }
 
+export function formatShoppingLine(item: ShoppingListItem) {
+  return `${shoppingDisplayName(item)} — ${formatShoppingAmount(item)}`
+}
+
 function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
   if (ingredient.quantity === undefined) return true
 
@@ -134,10 +153,10 @@ function shoppingCategoryFor(item: Omit<ShoppingListItem, 'category' | 'stateKey
   if (id.startsWith('frozen-') || name.startsWith('frozen ')) return 'Frozen'
   if (item.purchaseUnit) return 'Tins & jars'
 
-  if (/(beef|chicken|sausage|salmon|white-fish|fish-fillet|stewing-beef)/.test(text)) return 'Meat & fish'
+  if (/(beef|chicken|sausage|salmon|white-fish|fish-fillet|fish portion|stewing-beef)/.test(text)) return 'Meat & fish'
   if (/(onion|pepper|carrot|potato|garlic|lemon|lime|mushroom)/.test(text)) return 'Produce'
   if (/(yoghurt|yogurt|sour-cream|sour cream|cheddar|mozzarella|cheese|milk|butter)/.test(text)) return 'Dairy'
-  if (/(flour|rice|pasta|spaghetti|wrap|tortilla|suet|stock|tomato-puree|tomato purée|worcestershire|oil|paprika|cumin|coriander|oregano|thyme|rosemary|turmeric|curry|chilli|yeast|salt|pepper|herb|spice|garam|seasoning)/.test(text)) {
+  if (/(flour|rice|pasta|spaghetti|wrap|tortilla|suet|stock|tomato-puree|tomato purée|worcestershire|oil|paprika|cumin|coriander|oregano|thyme|rosemary|turmeric|curry|chilli|yeast|salt|pepper|herb|spice|garam|seasoning|lentil|bean)/.test(text)) {
     return 'Dry store & seasonings'
   }
 
