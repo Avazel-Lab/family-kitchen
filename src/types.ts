@@ -21,10 +21,13 @@ export type RecipeIngredient = IngredientAlternative & {
 }
 
 export type RecipeVariation = {
+  id?: string
   title: string
   text?: string
   steps?: string[]
   ingredients?: RecipeIngredient[]
+  planningOption?: boolean
+  replacesIngredientIds?: string[]
 }
 
 export type Recipe = {
