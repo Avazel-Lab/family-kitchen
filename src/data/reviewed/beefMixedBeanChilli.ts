@@ -38,7 +38,17 @@ export const beefMixedBeanChilli: Recipe = {
     { id: 'beef-stock-or-water', name: 'beef stock or water', quantity: 150, unit: 'ml' },
     { id: 'sour-cream', name: 'sour cream', quantity: 150, unit: 'ml', note: 'to serve' },
     { id: 'cooking-oil', name: 'olive or rapeseed oil', quantity: 1, unit: 'tbsp', note: 'if needed' },
-    { id: 'chilli-serving-carb', name: 'Rice, jacket potatoes or wraps, to serve' }
+    {
+      id: 'rice',
+      name: 'dry rice',
+      quantity: 360,
+      unit: 'g',
+      shoppingChoice: true,
+      note: 'to serve; jacket potatoes or wraps also work',
+      alternatives: [
+        { id: 'microwave-rice', name: 'microwave rice', quantity: 750, unit: 'g', purchaseUnit: { label: 'pouch', quantity: 250, unit: 'g' } }
+      ]
+    }
   ],
   quickSteps: [
     'Brown the beef well; add onion and peppers and soften.',
