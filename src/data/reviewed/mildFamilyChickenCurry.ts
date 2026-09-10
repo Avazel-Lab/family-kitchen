@@ -36,7 +36,17 @@ export const mildFamilyChickenCurry: Recipe = {
     { id: 'natural-yoghurt', name: 'natural yoghurt', quantity: 150, unit: 'g' },
     { id: 'water', name: 'water', quantity: 100, unit: 'ml' },
     { id: 'cooking-oil', name: 'rapeseed or olive oil', quantity: 1, unit: 'tbsp' },
-    { id: 'curry-serving-carb', name: 'Rice or flatbreads, to serve' }
+    {
+      id: 'rice',
+      name: 'dry rice',
+      quantity: 300,
+      unit: 'g',
+      shoppingChoice: true,
+      note: 'to serve; flatbreads also work',
+      alternatives: [
+        { id: 'microwave-rice', name: 'microwave rice', quantity: 625, unit: 'g', purchaseUnit: { label: 'pouch', quantity: 250, unit: 'g' } }
+      ]
+    }
   ],
   quickSteps: [
     'Brown the chicken and set aside if needed.',
