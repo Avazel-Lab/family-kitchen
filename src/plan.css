@@ -69,6 +69,17 @@
 .plan-action-buttons button:disabled { opacity: 0.55; cursor: default; }
 .plan-action-buttons a { border: 1px solid #c5ad9a; background: #fffdf9; }
 
+.planned-cook-panel {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid #c9d4cc;
+  border-radius: 18px;
+  background: #eef3ef;
+}
+.planned-cook-panel .eyebrow { margin-bottom: 4px; }
+.planned-cook-panel strong { display: block; font-size: 17px; }
+.planned-cook-panel p:last-child { margin: 5px 0 0; color: #59665f; font-size: 13px; }
+
 .plan-page { padding: 28px 0 56px; }
 .plan-hero { padding: 8px 4px 24px; }
 .plan-hero h1 { margin: 0; font-size: clamp(32px, 9vw, 56px); line-height: 0.98; letter-spacing: -0.045em; }
@@ -118,7 +129,29 @@
 .plan-item-title { text-decoration: none; }
 .plan-item-title h2 { margin: 12px 0 5px; font-size: 21px; letter-spacing: -0.025em; }
 .plan-item-main > p { margin: 0; color: #65716a; font-size: 13px; font-weight: 700; }
-.plan-portion-editor > span { display: block; margin-bottom: 7px; color: #727a75; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.plan-item-config { display: grid; gap: 12px; min-width: min(100%, 230px); }
+.plan-portion-editor > span,
+.plan-choice-editor > span {
+  display: block;
+  margin-bottom: 7px;
+  color: #727a75;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.plan-choice-editor select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 34px 8px 11px;
+  border: 1px solid #cfc7bb;
+  border-radius: 10px;
+  background: #fffdf9;
+  color: #22302a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
 .portion-controls.compact { grid-template-columns: 40px 68px 40px; }
 .portion-controls.compact button,
 .portion-controls.compact input { height: 40px; }
@@ -136,8 +169,27 @@
   text-decoration: underline;
 }
 
+.selected-variation-method {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #c9d4cc;
+  border-radius: 14px;
+  background: #eef3ef;
+}
+.selected-variation-method h3 { margin: 0 0 10px; font-size: 16px; }
+.selected-variation-method p { color: #59665f; }
+.variation-card.selected { border-color: #82998b; box-shadow: 0 0 0 2px rgba(75, 105, 89, 0.08); }
+.selected-option-label {
+  margin: -3px 0 10px !important;
+  color: #536b5d !important;
+  font-size: 11px !important;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 @media (min-width: 680px) {
   .plan-action-panel { grid-template-columns: 1fr auto; align-items: center; }
-  .plan-item { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .plan-item { grid-template-columns: minmax(0, 1fr) minmax(190px, 240px); align-items: start; }
   .plan-item-actions { grid-column: 1 / -1; }
 }
