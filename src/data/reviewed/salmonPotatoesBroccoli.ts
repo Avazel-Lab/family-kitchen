@@ -44,11 +44,23 @@ export const salmonPotatoesBroccoli: Recipe = {
   ],
   variations: [
     {
+      id: 'plain-white-fish',
       title: 'Plain white fish',
+      planningOption: true,
+      replacesIngredientIds: ['fish-fillets'],
+      ingredients: [
+        { id: 'white-fish-fillets', name: 'white fish fillet', pluralName: 'white fish fillets', quantity: 4, unit: 'count', note: 'cod, haddock or pollock' }
+      ],
       text: 'Use cod, haddock or pollock fillets instead of salmon. At 180°C, start checking thinner fresh fillets after about 8 minutes; thicker fillets may need longer.'
     },
     {
+      id: 'breaded-frozen-fish',
       title: 'Breaded or frozen fish with wedges',
+      planningOption: true,
+      replacesIngredientIds: ['fish-fillets'],
+      ingredients: [
+        { id: 'breaded-frozen-fish-portions', name: 'breaded or frozen fish portion', pluralName: 'breaded or frozen fish portions', quantity: 4, unit: 'count' }
+      ],
       steps: [
         'Cut the potatoes into wedges, toss with oil and seasoning, then cook in drawer 1 at 200°C for 25–30 minutes, shaking twice.',
         'Cook the breaded or frozen fish in drawer 2 using the product temperature and timing because coating, thickness and whether it is cooked from frozen vary considerably.',
