@@ -1,5 +1,5 @@
 import { activeIngredientsForPlan } from './planOptions'
-import { scaleIngredientQuantity } from './recipeScaling'
+import { pluralisePurchaseLabel, scaleIngredientQuantity } from './recipeScaling'
 import type { MealPlanItem, PurchaseUnit, Recipe, RecipeIngredient } from './types'
 
 export type ShoppingCategory =
@@ -96,7 +96,7 @@ export function formatShoppingAmount(item: ShoppingListItem) {
     purchaseUnit.unit === item.unit
   ) {
     const unitsToBuy = Math.max(1, Math.ceil((quantity - 0.000001) / purchaseUnit.quantity))
-    const label = unitsToBuy === 1 ? purchaseUnit.label : `${purchaseUnit.label}s`
+    const label = unitsToBuy === 1 ? purchaseUnit.label : pluralisePurchaseLabel(purchaseUnit.label)
     const purchaseText = `${unitsToBuy} × ${formatMeasuredQuantity(purchaseUnit.quantity, purchaseUnit.unit)} ${label}`
     const purchasedQuantity = unitsToBuy * purchaseUnit.quantity
 
