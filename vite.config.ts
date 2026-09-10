@@ -11,7 +11,7 @@ export default defineConfig({
       includeAssets: ['icon.svg'],
       manifest: {
         name: 'Family Kitchen',
-        short_name: 'Kitchen',
+        short_name: 'Family Kitchen',
         description: 'Simple family recipes, quick steps and meal planning.',
         theme_color: '#f5f0e8',
         background_color: '#f5f0e8',
