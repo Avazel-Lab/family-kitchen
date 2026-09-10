@@ -72,7 +72,10 @@ export const beefMixedBeanChilli: Recipe = {
       ]
     },
     {
+      id: 'dried-beans',
       title: 'Dried beans',
+      planningOption: true,
+      replacesIngredientIds: ['mixed-beans'],
       ingredients: [
         { id: 'dried-mixed-beans', name: 'dried mixed beans', quantity: 250, unit: 'g', note: 'use instead of the tinned mixed beans' }
       ],
