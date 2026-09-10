@@ -113,4 +113,45 @@ describe('shopping list', () => {
     expect(item.quantity).toBe(500)
     expect(formatShoppingAmount(item)).toBe('2 × 250 g pouches')
   })
+
+  it('does not add plain recipe water to the shopping list', () => {
+    const recipes = [recipe({
+      id: 'stew',
+      title: 'Stew',
+      ingredients: [
+        { id: 'dumpling-water', name: 'cold water', quantity: 45, unit: 'ml' },
+        { id: 'potatoes', name: 'potatoes', quantity: 500, unit: 'g' }
+      ],
+      variations: []
+    })]
+
+    const items = buildShoppingList([{ recipeId: 'stew', portions: 4 }], recipes)
+    expect(items.map((item) => item.id)).toEqual(['potatoes'])
+  })
+
+  it('suppresses an unquantified duplicate when the same canonical ingredient is already quantified', () => {
+    const recipes = [
+      recipe({
+        id: 'curry',
+        title: 'Curry',
+        ingredients: [{ id: 'natural-yoghurt', name: 'natural yoghurt', quantity: 150, unit: 'g' }],
+        variations: []
+      }),
+      recipe({
+        id: 'greek',
+        title: 'Greek chicken',
+        ingredients: [{ id: 'natural-yoghurt', name: 'Natural yoghurt to serve, optional' }],
+        variations: []
+      })
+    ]
+
+    const items = buildShoppingList([
+      { recipeId: 'curry', portions: 4 },
+      { recipeId: 'greek', portions: 4 }
+    ], recipes)
+
+    expect(items).toHaveLength(1)
+    expect(items[0].id).toBe('natural-yoghurt')
+    expect(items[0].quantity).toBe(150)
+  })
 })
