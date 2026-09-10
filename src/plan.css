@@ -1,0 +1,143 @@
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(100%, 1040px);
+  margin: 0 auto;
+}
+
+.site-nav { display: flex; align-items: center; }
+.plan-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  color: #4d5852;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.plan-link.active { background: #22302a; color: #fffdf9; }
+.plan-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #dfe9e2;
+  color: #315045;
+  font-size: 11px;
+}
+.plan-link.active .plan-count { background: #f5f0e8; color: #22302a; }
+
+.plan-action-panel {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding: 18px;
+  border: 1px solid #d7c5b6;
+  border-radius: 18px;
+  background: #f0e3d8;
+}
+.plan-action-panel .eyebrow { margin-bottom: 4px; }
+.plan-action-panel strong { display: block; font-size: 17px; }
+.plan-action-panel p:last-child { margin: 6px 0 0; color: #6b5a4f; font-size: 13px; line-height: 1.45; }
+.plan-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.plan-action-buttons button,
+.plan-action-buttons a,
+.plan-empty a,
+.plan-item-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.plan-action-buttons button {
+  border: 0;
+  background: #22302a;
+  color: #fffdf9;
+  cursor: pointer;
+}
+.plan-action-buttons button:disabled { opacity: 0.55; cursor: default; }
+.plan-action-buttons a { border: 1px solid #c5ad9a; background: #fffdf9; }
+
+.plan-page { padding: 28px 0 56px; }
+.plan-hero { padding: 8px 4px 24px; }
+.plan-hero h1 { margin: 0; font-size: clamp(32px, 9vw, 56px); line-height: 0.98; letter-spacing: -0.045em; }
+.plan-hero > p:last-child { max-width: 680px; margin: 14px 0 0; color: #66706a; line-height: 1.55; }
+
+.plan-empty {
+  padding: 22px;
+  border: 1px solid #d9d1c5;
+  border-radius: 18px;
+  background: #fffdf9;
+}
+.plan-empty h2 { margin: 0 0 8px; font-size: 21px; }
+.plan-empty p { margin: 0 0 16px; color: #66706a; line-height: 1.5; }
+.plan-empty a { background: #22302a; color: #fffdf9; }
+
+.plan-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.plan-toolbar > div { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.plan-toolbar a,
+.plan-toolbar button {
+  border: 0;
+  padding: 7px 0;
+  background: transparent;
+  color: #536059;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.plan-list { display: grid; gap: 12px; }
+.plan-item {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #d9d1c5;
+  border-radius: 18px;
+  background: #fffdf9;
+  box-shadow: 0 8px 24px rgba(58, 49, 40, 0.04);
+}
+.plan-item-title { text-decoration: none; }
+.plan-item-title h2 { margin: 12px 0 5px; font-size: 21px; letter-spacing: -0.025em; }
+.plan-item-main > p { margin: 0; color: #65716a; font-size: 13px; font-weight: 700; }
+.plan-portion-editor > span { display: block; margin-bottom: 7px; color: #727a75; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.portion-controls.compact { grid-template-columns: 40px 68px 40px; }
+.portion-controls.compact button,
+.portion-controls.compact input { height: 40px; }
+.portion-controls.compact input { width: 68px; }
+.plan-item-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.plan-item-actions a { background: #22302a; color: #fffdf9; }
+.plan-item-actions button {
+  border: 0;
+  padding: 8px 4px;
+  background: transparent;
+  color: #7a5142;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@media (min-width: 680px) {
+  .plan-action-panel { grid-template-columns: 1fr auto; align-items: center; }
+  .plan-item { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .plan-item-actions { grid-column: 1 / -1; }
+}
