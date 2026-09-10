@@ -56,4 +56,6 @@ export type Recipe = {
 export type MealPlanItem = {
   recipeId: string
   portions: number
+  variationId?: string
+  ingredientChoices?: Record<string, string>
 }
