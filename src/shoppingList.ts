@@ -10,6 +10,7 @@ export type ShoppingCategory =
   | 'Tins & jars'
   | 'Dry store & seasonings'
   | 'Other'
+  | 'Check cupboard'
 
 export type ShoppingListItem = {
   id: string
@@ -29,7 +30,8 @@ export const shoppingCategoryOrder: ShoppingCategory[] = [
   'Frozen',
   'Tins & jars',
   'Dry store & seasonings',
-  'Other'
+  'Other',
+  'Check cupboard'
 ]
 
 export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): ShoppingListItem[] {
@@ -87,7 +89,7 @@ export function shoppingDisplayName(item: ShoppingListItem) {
 
 export function formatShoppingAmount(item: ShoppingListItem) {
   const quantity = item.quantity
-  if (quantity === undefined) return 'as needed'
+  if (quantity === undefined) return 'check cupboard'
 
   const purchaseUnit = item.purchaseUnit
   if (
@@ -119,8 +121,6 @@ export function formatShoppingLine(item: ShoppingListItem) {
 }
 
 function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
-  if (ingredient.quantity === undefined) return true
-
   const id = ingredient.id.toLowerCase()
   const name = ingredient.name.toLowerCase()
 
@@ -132,6 +132,8 @@ function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
 }
 
 function shoppingCategoryFor(item: Omit<ShoppingListItem, 'category' | 'stateKey'>): ShoppingCategory {
+  if (item.quantity === undefined) return 'Check cupboard'
+
   const id = item.id.toLowerCase()
   const name = item.name.toLowerCase()
   const text = `${id} ${name}`
