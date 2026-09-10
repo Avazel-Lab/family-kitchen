@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { recipes } from './data/recipes'
 import { loadMealPlan, normalisePlanPortions, recipePlanHref, saveMealPlan } from './mealPlan'
 import { formatIngredient, formatPortionCount, ingredientSearchTerms } from './recipeScaling'
+import ShoppingPage from './ShoppingPage'
 import type { MealPlanItem, Recipe } from './types'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -10,7 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 type Route = {
-  section: 'home' | 'recipe' | 'plan'
+  section: 'home' | 'recipe' | 'plan' | 'shopping'
   id?: string
   portions?: number
 }
@@ -20,6 +21,7 @@ function routeFromHash(): Route {
   const [path, query = ''] = hash.split('?')
 
   if (path === 'plan') return { section: 'plan' }
+  if (path === 'shopping') return { section: 'shopping' }
 
   const [section, rawId] = path.split('/')
   if (section === 'recipe' && rawId) {
@@ -79,7 +81,9 @@ function App() {
   }
 
   let page
-  if (route.section === 'plan') {
+  if (route.section === 'shopping') {
+    page = <ShoppingPage plan={mealPlan} />
+  } else if (route.section === 'plan') {
     page = (
       <PlanPage
         plan={mealPlan}
@@ -118,6 +122,9 @@ function App() {
             <a className={route.section === 'plan' ? 'plan-link active' : 'plan-link'} href="#/plan">
               Plan
               {mealPlan.length > 0 && <span className="plan-count">{mealPlan.length}</span>}
+            </a>
+            <a className={route.section === 'shopping' ? 'plan-link active' : 'plan-link'} href="#/shopping">
+              Shopping
             </a>
           </nav>
         </div>
@@ -229,7 +236,7 @@ function PlanPage({
       <section className="plan-hero">
         <p className="eyebrow">Meal planning</p>
         <h1>Cooking plan</h1>
-        <p>Save the recipes and portion sizes you intend to cook. This plan will become the source for the consolidated shopping list.</p>
+        <p>Save the recipes and portion sizes you intend to cook. This plan is the source for the consolidated shopping list.</p>
       </section>
 
       {plannedRecipes.length === 0 ? (
@@ -243,6 +250,7 @@ function PlanPage({
           <div className="plan-toolbar">
             <strong>{plannedRecipes.length} {plannedRecipes.length === 1 ? 'recipe' : 'recipes'} planned</strong>
             <div>
+              <a href="#/shopping">Shopping list</a>
               <a href="#/">Add recipes</a>
               <button type="button" onClick={clearPlan}>Clear plan</button>
             </div>
@@ -414,7 +422,7 @@ function RecipePage({
               ? `Save ${formatPortionCount(portions)} portions`
               : `${formatPortionCount(plannedPortions)} portions currently saved`}
           </strong>
-          <p>Save this recipe and portion count for the upcoming shopping-list workflow.</p>
+          <p>Save this recipe and portion count to the cooking plan and consolidated shopping list.</p>
         </div>
         <div className="plan-action-buttons">
           <button
