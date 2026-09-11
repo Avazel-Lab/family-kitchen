@@ -29,6 +29,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Capture package lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: family-kitchen-package-lock
+          path: package-lock.json
+          retention-days: 1
+
       - name: Test
         run: npm test
 
