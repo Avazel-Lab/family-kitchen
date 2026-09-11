@@ -1,72 +1,19 @@
 import type { Recipe } from '../../types'
 
 export const salmonPotatoesBroccoli: Recipe = {
-  id: 'salmon-air-fryer-traybake',
-  title: 'Salmon / Fish, Potatoes & Greens',
-  summary: 'A flexible two-drawer air-fryer fish dinner with crisp potatoes and easy microwave frozen vegetables.',
-  category: 'Fish',
-  season: 'all-year',
-  tags: ['fish', 'salmon', 'air fryer', 'two drawer', 'frozen veg', 'quick'],
-  prepMinutes: 15,
-  cookMinutes: 30,
-  makes: '2–4 fish portions',
-  basePortions: 4,
-  householdUse: 'For 2 adults + toddler, a 4-pack of salmon or fish gives enough flexibility for appetite and usually leaves a useful lunch portion. For a 2-adult night, a 2-pack is ideal. Serve with potatoes and microwave frozen broccoli, peas or sweetcorn.',
-  freezer: 'Best eaten fresh. Cooked fish can be chilled promptly and used for lunch the next day.',
-  equipment: ['Two-drawer air fryer', 'Microwave'],
-  packNotes: [
-    'Choose a 2-pack or 4-pack of salmon or white fish to match the night rather than forcing a fixed quantity.',
-    'Frozen broccoli, peas or sweetcorn can be microwaved directly from frozen with no fresh vegetable remainder.',
-    'Potatoes are easy to scale and keep well.'
-  ],
-  ingredients: [
-    { id: 'fish-fillets', name: 'salmon fillet or other fish portion', pluralName: 'salmon fillets or other fish portions', quantity: 4, unit: 'count' },
-    { id: 'potatoes', name: 'potatoes', quantity: 700, unit: 'g', note: 'cut into roughly 2 cm chunks or wedges' },
-    { id: 'frozen-green-veg', name: 'frozen broccoli, peas or sweetcorn', quantity: 300, unit: 'g' },
-    { id: 'cooking-oil', name: 'olive or rapeseed oil', quantity: 1, unit: 'tbsp' },
-    { id: 'fish-seasoning', name: 'Spices, dried herbs and other seasonings as desired' },
-    { id: 'fish-finishing-flavour', name: 'Lemon or other finishing flavours, optional' }
-  ],
-  quickSteps: [
-    'Toss potatoes with oil and seasonings of choice.',
-    'Drawer 1: potatoes at 200°C for 25–30 minutes; shake twice.',
-    'Season the fish as desired.',
-    'Drawer 2: cook the fish for the time/temperature appropriate to the type; salmon is usually around 180°C for 9–11 minutes.',
-    'Microwave broccoli, peas or sweetcorn near the end.',
-    'Check the fish is cooked through and serve everything together.'
-  ],
-  method: [
-    'Toss the potato chunks or wedges with oil and whatever herbs, spices or other seasoning you want. Put them in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes. Exact time depends on size and the air fryer.',
-    'Pat fresh fish dry and season as desired. Lemon, herbs, spices, garlic or other flavourings can be used according to the meal you want.',
-    'For salmon, start drawer 2 when the potatoes have about 10 minutes left and cook at 180°C for roughly 9–11 minutes. Thick fillets may need slightly longer. For another fish type, use the relevant variation or packet instructions.',
-    'While the fish cooks, microwave your choice of frozen broccoli, peas or sweetcorn according to the packet instructions and drain if needed.',
-    'Check that the fish is cooked through at the thickest point, then serve with the crisp potatoes, vegetables and any finishing flavours you want.'
-  ],
+  id: 'salmon-air-fryer-traybake', title: 'Salmon / Fish, Potatoes & Greens', summary: 'A flexible two-drawer air-fryer fish dinner with crisp potatoes and easy microwave frozen vegetables.', category: 'Fish', season: 'all-year', tags: ['fish', 'salmon', 'air fryer', 'two drawer', 'frozen veg', 'quick'], prepMinutes: 15, cookMinutes: 30, makes: '2–4 fish portions', basePortions: 4,
+  householdUse: 'For 2 adults + toddler, a 4-pack of salmon or fish gives enough flexibility for appetite and usually leaves a useful lunch portion. For a 2-adult night, a 2-pack is ideal. Serve with potatoes and microwave frozen broccoli, peas or sweetcorn.', freezer: 'Best eaten fresh. Cooked fish can be chilled promptly and used for lunch the next day.', equipment: ['Two-drawer air fryer', 'Microwave'], packNotes: ['Choose a 2-pack or 4-pack of salmon or white fish to match the night rather than forcing a fixed quantity.', 'Frozen broccoli, peas or sweetcorn can be microwaved directly from frozen with no fresh vegetable remainder.', 'Potatoes are easy to scale and keep well.'],
+  ingredients: [{ id: 'fish-fillets', name: 'salmon fillet or other fish portion', pluralName: 'salmon fillets or other fish portions', quantity: 4, unit: 'count' }, { id: 'potatoes', name: 'potatoes', quantity: 700, unit: 'g', note: 'cut into roughly 2 cm chunks or wedges' }, { id: 'frozen-green-veg', name: 'frozen broccoli, peas or sweetcorn', quantity: 300, unit: 'g' }, { id: 'cooking-oil', name: 'olive or rapeseed oil', quantity: 1, unit: 'tbsp' }, { id: 'fish-seasoning', name: 'Spices, dried herbs and other seasonings as desired' }, { id: 'fish-finishing-flavour', name: 'Lemon or other finishing flavours, optional' }],
+  quickSteps: ['Toss potatoes with oil and seasonings of choice.', 'Drawer 1: potatoes at 200°C for 25–30 minutes; shake twice.', 'Season the fish as desired.', 'Drawer 2: cook the fish for the time/temperature appropriate to the type; salmon is usually around 180°C for 9–11 minutes.', 'Microwave broccoli, peas or sweetcorn near the end.', 'Check the fish is cooked through and serve everything together.'],
+  method: ['Toss the potato chunks or wedges with oil and whatever herbs, spices or other seasoning you want. Put them in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes.', 'Pat fresh fish dry and season as desired. Lemon, herbs, spices, garlic or other flavourings can be used according to the meal you want.', 'For salmon, start drawer 2 when the potatoes have about 10 minutes left and cook at 180°C for roughly 9–11 minutes. Thick fillets may need slightly longer. For another fish type, use the relevant variation or packet instructions.', 'While the fish cooks, microwave your choice of frozen broccoli, peas or sweetcorn according to the packet instructions and drain if needed.', 'Check that the fish is cooked through at the thickest point, then serve with the crisp potatoes, vegetables and any finishing flavours you want.'],
   variations: [
-    {
-      id: 'plain-white-fish',
-      title: 'Plain white fish',
-      planningOption: true,
-      replacesIngredientIds: ['fish-fillets'],
-      ingredients: [
-        { id: 'white-fish-fillets', name: 'white fish fillet', pluralName: 'white fish fillets', quantity: 4, unit: 'count', note: 'cod, haddock or pollock' }
-      ],
-      text: 'Use cod, haddock or pollock fillets instead of salmon. At 180°C, start checking thinner fresh fillets after about 8 minutes; thicker fillets may need longer.'
-    },
-    {
-      id: 'breaded-frozen-fish',
-      title: 'Breaded or frozen fish with wedges',
-      planningOption: true,
-      replacesIngredientIds: ['fish-fillets'],
-      ingredients: [
-        { id: 'breaded-frozen-fish-portions', name: 'breaded or frozen fish portion', pluralName: 'breaded or frozen fish portions', quantity: 4, unit: 'count' }
-      ],
-      steps: [
-        'Cut the potatoes into wedges, toss with oil and seasoning, then cook in drawer 1 at 200°C for 25–30 minutes, shaking twice.',
-        'Cook the breaded or frozen fish in drawer 2 using the product temperature and timing because coating, thickness and whether it is cooked from frozen vary considerably.',
-        'Microwave frozen peas, broccoli or sweetcorn near the end of the cooking time.',
-        'Serve the fish with the wedges, vegetables and lemon or another finishing flavour if wanted.'
-      ]
-    }
+    { id: 'plain-white-fish', title: 'Plain white fish', planningOption: true, replacesIngredientIds: ['fish-fillets'], ingredients: [{ id: 'white-fish-fillets', name: 'white fish fillet', pluralName: 'white fish fillets', quantity: 4, unit: 'count', note: 'cod, haddock or pollock' }],
+      quickSteps: ['Toss potatoes with oil and seasoning.', 'Drawer 1: potatoes at 200°C for 25–30 minutes; shake twice.', 'Season the white fish.', 'Drawer 2: white fish at about 180°C; start checking thinner fillets after 8 minutes.', 'Microwave broccoli, peas or sweetcorn near the end.', 'Check the fish is cooked through and serve.'],
+      method: ['Toss the potato chunks or wedges with oil and seasoning and cook in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes.', 'Pat the cod, haddock or pollock fillets dry and season as desired.', 'When the potatoes have roughly 8–10 minutes left, cook the white fish in drawer 2 at 180°C. Start checking thinner fresh fillets after about 8 minutes; thicker fillets may need longer.', 'Microwave frozen broccoli, peas or sweetcorn according to the packet while the fish cooks.', 'Check the fish is cooked through at the thickest point and serve with the potatoes, vegetables and any finishing flavour you want.'],
+      text: 'Use cod, haddock or pollock fillets instead of salmon. At 180°C, start checking thinner fresh fillets after about 8 minutes; thicker fillets may need longer.' },
+    { id: 'breaded-frozen-fish', title: 'Breaded or frozen fish with wedges', planningOption: true, replacesIngredientIds: ['fish-fillets'], ingredients: [{ id: 'breaded-frozen-fish-portions', name: 'breaded or frozen fish portion', pluralName: 'breaded or frozen fish portions', quantity: 4, unit: 'count' }],
+      quickSteps: ['Cut potatoes into wedges, toss with oil and seasoning.', 'Drawer 1: wedges at 200°C for 25–30 minutes; shake twice.', 'Drawer 2: cook the breaded/frozen fish using its packet temperature and timing.', 'Microwave peas, broccoli or sweetcorn near the end.', 'Check everything is piping hot and serve with lemon or another finishing flavour if wanted.'],
+      method: ['Cut the potatoes into wedges, toss with oil and seasoning, then cook in drawer 1 at 200°C for 25–30 minutes, shaking after roughly 10 and 20 minutes.', 'Put the breaded or frozen fish portions in drawer 2 and use the product temperature and timing because coating, thickness and whether it is cooked from frozen vary considerably.', 'Microwave frozen peas, broccoli or sweetcorn according to the packet near the end of the cooking time.', 'Check the fish is cooked through and piping hot, then serve with the wedges, vegetables and lemon or another finishing flavour if wanted.'],
+      steps: ['Cut the potatoes into wedges, toss with oil and seasoning, then cook in drawer 1 at 200°C for 25–30 minutes, shaking twice.', 'Cook the breaded or frozen fish in drawer 2 using the product temperature and timing because coating, thickness and whether it is cooked from frozen vary considerably.', 'Microwave frozen peas, broccoli or sweetcorn near the end of the cooking time.', 'Serve the fish with the wedges, vegetables and lemon or another finishing flavour if wanted.'] }
   ]
 }
