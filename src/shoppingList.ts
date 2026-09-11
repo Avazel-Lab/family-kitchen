@@ -2,15 +2,7 @@ import { activeIngredientsForPlan } from './planOptions'
 import { pluralisePurchaseLabel, scaleIngredientQuantity } from './recipeScaling'
 import type { MealPlanItem, PurchaseUnit, Recipe, RecipeIngredient } from './types'
 
-export type ShoppingCategory =
-  | 'Produce'
-  | 'Meat & fish'
-  | 'Dairy'
-  | 'Frozen'
-  | 'Tins & jars'
-  | 'Dry store & seasonings'
-  | 'Other'
-  | 'Check cupboard'
+export type ShoppingCategory = 'Produce' | 'Meat & fish' | 'Dairy' | 'Frozen' | 'Tins & jars' | 'Dry store' | 'Other' | 'Check cupboard'
 
 export type ShoppingListItem = {
   id: string
@@ -23,19 +15,16 @@ export type ShoppingListItem = {
   stateKey: string
 }
 
-export const shoppingCategoryOrder: ShoppingCategory[] = [
-  'Produce',
-  'Meat & fish',
-  'Dairy',
-  'Frozen',
-  'Tins & jars',
-  'Dry store & seasonings',
-  'Other',
-  'Check cupboard'
-]
+export const shoppingCategoryOrder: ShoppingCategory[] = ['Produce', 'Meat & fish', 'Dairy', 'Frozen', 'Tins & jars', 'Dry store', 'Other', 'Check cupboard']
+
+const DEFAULT_CUPBOARD_IDS = new Set([
+  'cooking-oil', 'olive-oil', 'black-pepper', 'fine-salt', 'bay-leaf', 'worcestershire-sauce',
+  'ground-cumin', 'ground-coriander', 'smoked-paprika', 'paprika', 'dried-oregano', 'dried-basil',
+  'dried-thyme', 'dried-rosemary', 'turmeric', 'garam-masala', 'mild-curry-powder', 'mild-chilli-powder'
+])
 
 export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): ShoppingListItem[] {
-  const combined = new Map<string, Omit<ShoppingListItem, 'category' | 'stateKey'>>()
+  const combined = new Map<string, Omit<ShoppingListItem, 'category' | 'stateKey'> & { shoppingMode?: RecipeIngredient['shoppingMode'] }>()
 
   for (const planned of plan) {
     const recipe = recipes.find((candidate) => candidate.id === planned.recipeId)
@@ -43,13 +32,13 @@ export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): Shop
 
     for (const ingredient of activeIngredientsForPlan(recipe, planned)) {
       if (!shouldIncludeInShoppingList(ingredient)) continue
-
       const quantity = scaleIngredientQuantity(ingredient, planned.portions, recipe.basePortions)
       const key = `${ingredient.id}::${ingredient.unit ?? 'unquantified'}`
       const existing = combined.get(key)
 
       if (existing) {
         if (quantity !== undefined) existing.quantity = (existing.quantity ?? 0) + quantity
+        if (ingredient.shoppingMode === 'check') existing.shoppingMode = 'check'
         continue
       }
 
@@ -59,7 +48,8 @@ export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): Shop
         pluralName: ingredient.pluralName,
         quantity,
         unit: ingredient.unit,
-        purchaseUnit: ingredient.purchaseUnit
+        purchaseUnit: ingredient.purchaseUnit,
+        shoppingMode: ingredient.shoppingMode
       })
     }
   }
@@ -71,11 +61,7 @@ export function buildShoppingList(plan: MealPlanItem[], recipes: Recipe[]): Shop
     .filter((item) => item.quantity !== undefined || !quantifiedIds.has(item.id))
     .map((item) => {
       const category = shoppingCategoryFor(item)
-      return {
-        ...item,
-        category,
-        stateKey: shoppingStateKey(item)
-      }
+      return { ...item, category, stateKey: shoppingStateKey(item) }
     })
     .sort((a, b) => {
       const categoryDifference = shoppingCategoryOrder.indexOf(a.category) - shoppingCategoryOrder.indexOf(b.category)
@@ -94,29 +80,21 @@ export function shoppingDisplayName(item: ShoppingListItem) {
 export function formatShoppingAmount(item: ShoppingListItem) {
   const quantity = item.quantity
   if (quantity === undefined) return 'check cupboard'
-
   const purchaseUnit = item.purchaseUnit
-  if (
-    purchaseUnit &&
-    purchaseUnit.quantity > 0 &&
-    purchaseUnit.unit === item.unit
-  ) {
+  if (purchaseUnit && purchaseUnit.quantity > 0 && purchaseUnit.unit === item.unit) {
     const unitsToBuy = Math.max(1, Math.ceil((quantity - 0.000001) / purchaseUnit.quantity))
     const label = unitsToBuy === 1 ? purchaseUnit.label : pluralisePurchaseLabel(purchaseUnit.label)
     const purchaseText = `${unitsToBuy} × ${formatMeasuredQuantity(purchaseUnit.quantity, purchaseUnit.unit)} ${label}`
     const purchasedQuantity = unitsToBuy * purchaseUnit.quantity
-
     if (Math.abs(purchasedQuantity - quantity) < 0.001) return purchaseText
     return `${purchaseText} (${formatMeasuredQuantity(quantity, item.unit)} required)`
   }
-
   if (item.unit === 'count') {
     const required = roundQuarter(quantity)
     const buy = Math.max(1, Math.ceil(required - 0.000001))
     if (Math.abs(required - buy) < 0.001) return String(buy)
     return `${buy} (${formatQuarterNumber(required)} required)`
   }
-
   return formatMeasuredQuantity(quantity, item.unit)
 }
 
@@ -125,42 +103,32 @@ export function formatShoppingLine(item: ShoppingListItem) {
 }
 
 function shouldIncludeInShoppingList(ingredient: RecipeIngredient) {
+  if (ingredient.shoppingMode === 'exclude') return false
   const id = ingredient.id.toLowerCase()
   const name = ingredient.name.toLowerCase()
-
-  // Plain water and water/stock choices never need buying.
   if (id === 'water' || name === 'water') return false
   if (id.endsWith('-water') && name.includes('water')) return false
   if ((id.includes('stock-or-water') || id.includes('water-or-stock')) && name.includes('water')) return false
-
   return true
 }
 
-function shoppingCategoryFor(item: Omit<ShoppingListItem, 'category' | 'stateKey'>): ShoppingCategory {
-  if (item.quantity === undefined) return 'Check cupboard'
-
+function shoppingCategoryFor(item: Omit<ShoppingListItem, 'category' | 'stateKey'> & { shoppingMode?: RecipeIngredient['shoppingMode'] }): ShoppingCategory {
+  if (item.shoppingMode === 'check' || item.quantity === undefined || DEFAULT_CUPBOARD_IDS.has(item.id)) return 'Check cupboard'
   const id = item.id.toLowerCase()
   const name = item.name.toLowerCase()
   const text = `${id} ${name}`
-
   if (id.startsWith('frozen-') || name.startsWith('frozen ')) return 'Frozen'
   if (item.purchaseUnit && /^(tin|jar)$/i.test(item.purchaseUnit.label)) return 'Tins & jars'
-
   if (/(beef|chicken|sausage|salmon|white-fish|fish-fillet|fish portion|stewing-beef)/.test(text)) return 'Meat & fish'
   if (/(onion|pepper|carrot|potato|garlic|lemon|lime|mushroom)/.test(text)) return 'Produce'
   if (/(yoghurt|yogurt|sour-cream|sour cream|cheddar|mozzarella|cheese|milk|butter)/.test(text)) return 'Dairy'
-  if (/(flour|rice|pasta|spaghetti|wrap|tortilla|suet|stock|tomato-puree|tomato purée|worcestershire|oil|paprika|cumin|coriander|oregano|thyme|rosemary|turmeric|curry|chilli|yeast|salt|pepper|herb|spice|garam|seasoning|lentil|bean)/.test(text)) {
-    return 'Dry store & seasonings'
-  }
-
+  if (/(flour|rice|pasta|spaghetti|wrap|tortilla|suet|stock|tomato-puree|tomato purée|yeast|lentil|bean)/.test(text)) return 'Dry store'
   return 'Other'
 }
 
 function shoppingStateKey(item: Omit<ShoppingListItem, 'category' | 'stateKey'>) {
   const quantity = item.quantity === undefined ? 'none' : item.quantity.toFixed(4)
-  const purchase = item.purchaseUnit
-    ? `${item.purchaseUnit.quantity}:${item.purchaseUnit.unit}:${item.purchaseUnit.label}`
-    : 'none'
+  const purchase = item.purchaseUnit ? `${item.purchaseUnit.quantity}:${item.purchaseUnit.unit}:${item.purchaseUnit.label}` : 'none'
   return `${item.id}|${item.unit ?? 'none'}|${quantity}|${purchase}`
 }
 
@@ -179,16 +147,10 @@ function formatQuarterNumber(value: number) {
   const whole = Math.floor(rounded + 0.0001)
   const fraction = Math.round((rounded - whole) * 4)
   const fractions: Record<number, string> = { 1: '¼', 2: '½', 3: '¾' }
-
   if (fraction === 0) return String(whole)
   if (whole === 0) return fractions[fraction]
   return `${whole}${fractions[fraction]}`
 }
 
-function roundQuarter(value: number) {
-  return Math.round(value * 4) / 4
-}
-
-function formatDecimal(value: number, maximumFractionDigits: number) {
-  return new Intl.NumberFormat('en-GB', { maximumFractionDigits }).format(value)
-}
+function roundQuarter(value: number) { return Math.round(value * 4) / 4 }
+function formatDecimal(value: number, maximumFractionDigits: number) { return new Intl.NumberFormat('en-GB', { maximumFractionDigits }).format(value) }

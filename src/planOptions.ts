@@ -24,6 +24,14 @@ export function activeIngredientsForPlan(recipe: Recipe, item?: MealPlanItem): R
   return ingredients.map((ingredient) => selectedIngredientChoice(ingredient, item?.ingredientChoices))
 }
 
+export function activeQuickStepsForPlan(recipe: Recipe, item?: MealPlanItem) {
+  return plannedVariation(recipe, item)?.quickSteps ?? recipe.quickSteps
+}
+
+export function activeMethodForPlan(recipe: Recipe, item?: MealPlanItem) {
+  return plannedVariation(recipe, item)?.method ?? recipe.method
+}
+
 export function selectedIngredientChoice(
   ingredient: RecipeIngredient,
   choices?: Record<string, string>

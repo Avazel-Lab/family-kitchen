@@ -42,12 +42,8 @@ export function loadMealPlan(): MealPlanItem[] {
       }
 
       const existingIndex = deduplicated.findIndex((current) => current.recipeId === item.recipeId)
-
-      if (existingIndex >= 0) {
-        deduplicated[existingIndex] = item
-      } else {
-        deduplicated.push(item)
-      }
+      if (existingIndex >= 0) deduplicated[existingIndex] = item
+      else deduplicated.push(item)
     }
 
     return deduplicated
@@ -66,21 +62,32 @@ export function saveMealPlan(plan: MealPlanItem[]) {
   }
 }
 
-export function recipePlanHref(recipeId: string, portions: number) {
-  return `#/recipe/${encodeURIComponent(recipeId)}?portions=${encodeURIComponent(String(normalisePlanPortions(portions)))}`
+export function recipePlanHref(item: MealPlanItem) {
+  const params = new URLSearchParams()
+  params.set('portions', String(normalisePlanPortions(item.portions)))
+  params.set('configured', '1')
+  if (item.variationId) params.set('variation', item.variationId)
+  for (const [ingredientId, alternativeId] of Object.entries(item.ingredientChoices ?? {}).sort()) {
+    params.set(`choice.${ingredientId}`, alternativeId)
+  }
+  return `#/recipe/${encodeURIComponent(item.recipeId)}?${params.toString()}`
+}
+
+export function sameMealConfiguration(a?: MealPlanItem, b?: MealPlanItem) {
+  if (!a || !b) return false
+  if (a.recipeId !== b.recipeId || normalisePlanPortions(a.portions) !== normalisePlanPortions(b.portions)) return false
+  if ((a.variationId ?? '') !== (b.variationId ?? '')) return false
+  const aChoices = a.ingredientChoices ?? {}
+  const bChoices = b.ingredientChoices ?? {}
+  const keys = new Set([...Object.keys(aChoices), ...Object.keys(bChoices)])
+  for (const key of keys) if ((aChoices[key] ?? '') !== (bChoices[key] ?? '')) return false
+  return true
 }
 
 function isMealPlanItem(value: unknown): value is MealPlanItem {
   if (!value || typeof value !== 'object') return false
-
   const candidate = value as Record<string, unknown>
-  return (
-    typeof candidate.recipeId === 'string' &&
-    candidate.recipeId.length > 0 &&
-    typeof candidate.portions === 'number' &&
-    Number.isFinite(candidate.portions) &&
-    candidate.portions > 0
-  )
+  return typeof candidate.recipeId === 'string' && candidate.recipeId.length > 0 && typeof candidate.portions === 'number' && Number.isFinite(candidate.portions) && candidate.portions > 0
 }
 
 function loadStringMap(key: string) {
@@ -89,7 +96,6 @@ function loadStringMap(key: string) {
     if (!raw) return {} as Record<string, string>
     const parsed: unknown = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {} as Record<string, string>
-
     const result: Record<string, string> = {}
     for (const [entryKey, value] of Object.entries(parsed as Record<string, unknown>)) {
       if (typeof value === 'string' && value) result[entryKey] = value
@@ -105,10 +111,7 @@ function loadNestedStringMap(key: string) {
     const raw = window.localStorage.getItem(key)
     if (!raw) return {} as Record<string, Record<string, string>>
     const parsed: unknown = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return {} as Record<string, Record<string, string>>
-    }
-
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {} as Record<string, Record<string, string>>
     const result: Record<string, Record<string, string>> = {}
     for (const [entryKey, value] of Object.entries(parsed as Record<string, unknown>)) {
       const choices = normaliseIngredientChoices(value)
@@ -122,7 +125,6 @@ function loadNestedStringMap(key: string) {
 
 function normaliseIngredientChoices(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
-
   const result: Record<string, string> = {}
   for (const [ingredientId, alternativeId] of Object.entries(value as Record<string, unknown>)) {
     if (typeof alternativeId === 'string' && alternativeId) result[ingredientId] = alternativeId

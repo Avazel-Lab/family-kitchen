@@ -4,6 +4,8 @@ export type PurchaseUnit = {
   unit: string
 }
 
+export type ShoppingMode = 'buy' | 'check' | 'exclude'
+
 export type IngredientAlternative = {
   id: string
   name: string
@@ -14,6 +16,7 @@ export type IngredientAlternative = {
   quantityForPortions?: number
   scalable?: boolean
   purchaseUnit?: PurchaseUnit
+  shoppingMode?: ShoppingMode
 }
 
 export type RecipeIngredient = IngredientAlternative & {
@@ -26,6 +29,8 @@ export type RecipeVariation = {
   title: string
   text?: string
   steps?: string[]
+  quickSteps?: string[]
+  method?: string[]
   ingredients?: RecipeIngredient[]
   planningOption?: boolean
   replacesIngredientIds?: string[]
@@ -40,6 +45,7 @@ export type Recipe = {
   tags: string[]
   prepMinutes: number
   cookMinutes: number
+  elapsedTime?: string
   makes: string
   basePortions: number
   householdUse: string
