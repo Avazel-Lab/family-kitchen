@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -29,12 +29,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Capture package lock
-        uses: actions/upload-artifact@v4
-        with:
-          name: family-kitchen-package-lock
-          path: package-lock.json
-          retention-days: 1
+      - name: Commit generated package lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Add dependency lockfile"
+            git push
+          fi
 
       - name: Test
         run: npm test
