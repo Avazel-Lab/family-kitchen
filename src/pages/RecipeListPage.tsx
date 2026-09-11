@@ -16,7 +16,7 @@ export default function RecipeListPage({ plan }: { plan: MealPlanItem[] }) {
   useEffect(() => { window.sessionStorage.setItem(FILTER_KEY, filter) }, [filter])
   useEffect(() => {
     const saved = Number(window.sessionStorage.getItem(SCROLL_KEY) ?? '0')
-    if (saved > 0) window.requestAnimationFrame(() => window.scrollTo({ top: saved, behavior: 'instant' }))
+    if (saved > 0) window.requestAnimationFrame(() => window.scrollTo({ top: saved, behavior: 'auto' }))
   }, [])
 
   const filters = useMemo(() => ['All', ...Array.from(new Set(recipes.map((recipe) => recipe.category))).sort(), 'Summer', 'Winter'], [])

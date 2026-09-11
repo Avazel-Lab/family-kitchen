@@ -1,0 +1,44 @@
+.recipe-page {
+  width: min(100%, 820px);
+  margin-inline: auto;
+}
+
+.planned-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #4e614f;
+  background: #e8eee5;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.install-dismiss {
+  border: 0 !important;
+  padding-inline: 8px !important;
+  background: transparent !important;
+  color: var(--ink-soft) !important;
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--green-mid) 70%, white);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
